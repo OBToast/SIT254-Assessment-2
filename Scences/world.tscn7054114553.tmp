@@ -1,0 +1,543 @@
+[gd_scene format=3 uid="uid://5h0tw72l0pvg"]
+
+[ext_resource type="PackedScene" uid="uid://bbym4e13vbn8q" path="res://Scences/torch.tscn" id="1_y6ldt"]
+[ext_resource type="AudioStream" uid="uid://bk6hddlmrik6d" path="res://Assets/Audio/Footstep.wav" id="2_nbkwn"]
+[ext_resource type="AudioStream" uid="uid://cjtdiskr42o2b" path="res://Assets/Audio/Landing.wav" id="3_am073"]
+[ext_resource type="Texture2D" uid="uid://bvv7r6old2ctx" path="res://Assets/Textures/grey_dev.jpg" id="4_am073"]
+[ext_resource type="Texture2D" uid="uid://du3risjigar4i" path="res://Assets/Textures/orange_dev.jpg" id="5_qk82f"]
+[ext_resource type="Shader" uid="uid://ji7oi6bx8ps5" path="res://Assets/Shaders/GameBoy.gdshader" id="6_qk82f"]
+[ext_resource type="Texture2D" uid="uid://d3yat8ou17spr" path="res://Assets/Textures/crosshair.png" id="7_jta3l"]
+
+[sub_resource type="GDScript" id="GDScript_1pivh"]
+resource_name = "Player"
+script/source = "extends CharacterBody3D
+
+enum states {GROUND, AIR}
+var last_ground_state = states.GROUND
+
+const WALK_SPEED = 10.0
+const SPRINT_SPEED = 20.0
+var speed = WALK_SPEED
+
+var fall_velocity = 0.0
+const JUMP_VELOCITY = 15.0
+const PLAYER_GRAVITY = Vector3(0, -25.0, 0)
+const SENSITIVITY = 0.01
+const AIR_CONTROL = 4.0 # Air control is measured in % per frame
+
+const DASH_SPEED = 45.0
+const DASH_DURATION = 0.15
+
+var is_dashing = false
+var dash_timer = 0.0
+var dash_direction = Vector3.ZERO
+
+# Variable landing volume
+const LANDING_SFX_MIN_VELOCITY = 5
+const LANDING_SFX_MAX_VELOCITY = 20
+const LANDING_SFX_MIN_VOLUME = -40
+const LANDING_SFX_MAX_VOLUME = -10
+
+# Head bobbing
+const BOB_FREQ = 1.2
+const BOB_AMP = 0.04
+var t_bob = 0
+var last_bob_x_position = 0.0
+var last_bob_direction = 0
+var head_bobbing_x_position = 0.0
+var head_bobbing_y_position = 0.0
+
+# Fov variables
+const BASE_FOV = 80
+const FOV_SPEED_BOOST = 1
+
+@onready var head = $Head
+@onready var camera = $Head/Camera3D
+@onready var footsteps_sfx: AudioStreamPlayer3D = $Feet/Footsteps
+@onready var jump_sfx: AudioStreamPlayer3D = $Feet/Jump
+@onready var landing_sfx: AudioStreamPlayer3D = $Feet/Landing
+
+@onready var torch = $Head/Torch
+
+func _ready():
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+func _unhandled_input(event):
+	if event is InputEventMouseMotion && Input.mouse_mode == Input.MOUSE_MODE_CAPTURED: # Only move camera when mouse captured
+		head.rotate_y(-event.relative.x * SENSITIVITY)
+		camera.rotate_x(-event.relative.y * SENSITIVITY)
+		camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-85), deg_to_rad(85))
+
+func _physics_process(delta: float) -> void:
+		# ================ DASH ================ 
+	if Input.is_action_just_pressed(\"Dash\") and not is_dashing:
+		start_dash()
+
+	if is_dashing:
+		dash_timer -= delta
+
+		# Lock velocity to the dash direction
+		velocity = dash_direction * DASH_SPEED
+
+		# No gravity, no normal movement while dashing
+		move_and_slide()
+
+		if dash_timer <= 0.0:
+			is_dashing = false
+
+		return
+		
+	# ================ MOVEMENT ================ 
+	# Gravity + landing sfx
+	if not is_on_floor():
+		velocity += PLAYER_GRAVITY * delta
+		last_ground_state = states.AIR
+		# Store the fastest downward speed
+		fall_velocity = min(velocity.y, fall_velocity)
+	else:
+		if last_ground_state == states.AIR:
+			print(\"Fall speed:\", fall_velocity)
+			var impact_volume = remap(abs(fall_velocity), LANDING_SFX_MIN_VELOCITY, LANDING_SFX_MAX_VELOCITY, LANDING_SFX_MIN_VOLUME, LANDING_SFX_MAX_VOLUME)
+			landing_sfx.volume_db = clamp(impact_volume, LANDING_SFX_MIN_VOLUME, LANDING_SFX_MAX_VOLUME)
+			landing_sfx.play()
+			
+			fall_velocity = 0.0
+			last_ground_state = states.GROUND
+
+	# Handle jump.
+	if Input.is_action_just_pressed(\"Jump\") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+		jump_sfx.play()
+	
+	# ================ ATTACK ================ 
+	if Input.is_action_just_pressed(\"Attack\"):
+		torch.attack(\"attack1\")
+
+	# Get the input direction and handle the movement/deceleration.
+	# As good practice, you should replace UI actions with custom gameplay actions.
+	var input_dir := Input.get_vector(\"Left\", \"Right\", \"Forward\", \"Back\")
+	var direction: Vector3 = (head.global_basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized()
+	if is_on_floor():
+		if direction != Vector3.ZERO:
+			velocity.x = direction.x * speed
+			velocity.z = direction.z * speed
+		else:
+			velocity.x = 0.0
+			velocity.z = 0.0
+	else:
+		velocity.x = lerp(velocity.x, direction.x * speed, delta * AIR_CONTROL)
+		velocity.z = lerp(velocity.z, direction.z * speed, delta * AIR_CONTROL)
+	
+	# Headbobbing
+	t_bob += delta * velocity.length() * float(is_on_floor())
+	camera.transform.origin = _headbob(t_bob)
+	
+	# FOV
+	var velocity_clamped = clamp(velocity.length(), 0.5, SPRINT_SPEED * 2)
+	var target_fov = BASE_FOV + FOV_SPEED_BOOST * velocity_clamped
+	camera.fov = lerp(camera.fov, target_fov, delta * 8.0)
+	
+	play_footsteps()
+	move_and_slide()
+
+func _headbob(time) -> Vector3:
+	var pos = Vector3.ZERO
+	head_bobbing_x_position = cos(time * BOB_FREQ / 2) * BOB_AMP
+	head_bobbing_y_position = sin(time * BOB_FREQ) * BOB_AMP
+	
+	pos.x = head_bobbing_x_position
+	pos.y = head_bobbing_y_position
+	return pos
+
+func play_footsteps() -> void:
+	if velocity != Vector3.ZERO:
+		var bob_position_x = head_bobbing_x_position
+		var bob_direction = sign(bob_position_x - last_bob_x_position)
+		
+		if bob_direction != 0 and bob_direction != last_bob_direction and last_bob_direction != 0:
+			footsteps_sfx.play()
+		
+		last_bob_direction = bob_direction
+		last_bob_x_position = bob_position_x
+	else:
+		last_bob_direction = 0
+		last_bob_x_position = head_bobbing_x_position
+
+func start_dash() -> void:
+	is_dashing = true
+	dash_timer = DASH_DURATION
+
+	var input_dir := Input.get_vector(\"Left\", \"Right\", \"Forward\", \"Back\")
+	var direction: Vector3 = (head.global_basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized()
+
+	# If there is no movement input, dash forward
+	if direction == Vector3.ZERO:
+		direction = -head.global_basis.z
+		direction.y = 0.0
+		direction = direction.normalized()
+
+	dash_direction = direction
+	velocity = dash_direction * DASH_SPEED
+
+	dash_direction = direction
+	velocity = dash_direction * DASH_SPEED
+"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1pivh"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_1pivh"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gv5m4"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_f3sb7"]
+sky_material = SubResource("ProceduralSkyMaterial_gv5m4")
+
+[sub_resource type="Environment" id="Environment_fj7yv"]
+background_mode = 2
+sky = SubResource("Sky_f3sb7")
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jta3l"]
+albedo_texture = ExtResource("4_am073")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3fqxr"]
+albedo_texture = ExtResource("5_qk82f")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_x5ytc"]
+albedo_texture = ExtResource("5_qk82f")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vmd5f"]
+albedo_texture = ExtResource("5_qk82f")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_npiv4"]
+albedo_texture = ExtResource("5_qk82f")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0xyb7"]
+shader = ExtResource("6_qk82f")
+shader_parameter/shader_color = Color(1, 1, 1, 1)
+shader_parameter/number_of_colors = 10
+
+[sub_resource type="GDScript" id="GDScript_jta3l"]
+resource_name = "settings"
+script/source = "extends Control
+@onready var game_boy_shader: ColorRect = $\"../GameBoyShader\" 
+@onready var shader_material: ShaderMaterial = game_boy_shader.material as ShaderMaterial
+@onready var crosshair: TextureRect = $\"../Crosshair\"
+
+@onready var volume_slider: HSlider = $MarginContainer/VBoxContainer/Volume/VolumeSlider
+@onready var color_simplification: HSlider = $MarginContainer/VBoxContainer/ColorSteps/ColorSimplification
+@onready var color_picker_button: ColorPickerButton = $MarginContainer/VBoxContainer/ShaderColor/ColorPickerButton
+@onready var pixelation: HSlider = $MarginContainer/VBoxContainer/Pixelation/Pixelation
+
+
+func _on_volume_slider_value_changed(value: float) -> void:
+	AudioServer.set_bus_volume_db(0, linear_to_db(value))
+
+func _on_color_simplification_value_changed(value: int) -> void:
+	shader_material.set_shader_parameter(\"number_of_colors\", value)
+
+func _on_color_picker_button_color_changed(color: Color) -> void:
+	shader_material.set_shader_parameter(\"shader_color\", color)
+
+func _on_pixelation_value_changed(value: float) -> void:
+	get_viewport().scaling_3d_scale = value
+
+func _ready():
+	load_settings()
+
+func _physics_process(delta: float) -> void:
+	if Input.is_action_just_pressed(\"Escape\"):
+		if get_tree().paused:
+			# Resume game
+			get_tree().paused = false
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			crosshair.show()
+			save_settings()
+			self.hide()
+		else:
+			# Pause game
+			get_tree().paused = true
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+			crosshair.hide()
+			self.show()
+
+
+const SETTINGS_FILE := \"user://settings.cfg\"
+
+func save_settings() -> void:
+	var config := ConfigFile.new()
+
+	config.set_value(\"settings\", \"volume\", AudioServer.get_bus_volume_linear(0))
+	config.set_value(\"settings\", \"number_of_colors\", shader_material.get_shader_parameter(\"number_of_colors\"))
+	config.set_value(\"settings\", \"shader_color\", shader_material.get_shader_parameter(\"shader_color\"))
+	config.set_value(\"settings\", \"pixelation\", get_viewport().scaling_3d_scale)
+
+	config.save(SETTINGS_FILE)
+
+
+func load_settings() -> void:
+	var config := ConfigFile.new()
+
+	if config.load(SETTINGS_FILE) != OK:
+		return
+
+	# Volume
+	var volume = config.get_value(\"settings\", \"volume\", 1.0)
+	AudioServer.set_bus_volume_linear(0, volume)
+	volume_slider.value = volume
+
+	# Number of colours
+	var number_of_colors = config.get_value(\"settings\", \"number_of_colors\", 4)
+	shader_material.set_shader_parameter(\"number_of_colors\", number_of_colors)
+	color_simplification.value = number_of_colors
+
+	# Shader colour
+	var shader_color = config.get_value(\"settings\", \"shader_color\", Color.WHITE)
+	shader_material.set_shader_parameter(\"shader_color\", shader_color)
+	color_picker_button.color = shader_color
+
+	# Pixelation
+	var pixelation_value = config.get_value(\"settings\", \"pixelation\", 1.0)
+	get_viewport().scaling_3d_scale = pixelation_value
+	pixelation.value = pixelation_value
+
+
+func _on_volume_reset_pressed() -> void:
+	volume_slider.value = 1.0
+
+func _on_color_steps_reset_pressed() -> void:
+	color_simplification.value = 5.0
+	_on_color_simplification_value_changed(5)
+
+func _on_shader_color_reset_pressed() -> void:
+	var default_color := Color(1, 1, 1, 1)
+	color_picker_button.color = default_color
+	_on_color_picker_button_color_changed(default_color)
+
+func _on_pixelation_reset_pressed() -> void:
+	pixelation.value = 0.25
+	_on_pixelation_value_changed(0.25)
+"
+
+[node name="World" type="Node3D" unique_id=1837528198]
+
+[node name="Player" type="CharacterBody3D" parent="." unique_id=2027141483]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0906111, 0)
+script = SubResource("GDScript_1pivh")
+
+[node name="PlayerCollision" type="CollisionShape3D" parent="Player" unique_id=545529474]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_1pivh")
+
+[node name="PlayerBody" type="MeshInstance3D" parent="Player" unique_id=1915647114]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_1pivh")
+
+[node name="Head" type="Node3D" parent="Player" unique_id=648969813]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7796263, 0)
+
+[node name="Torch" parent="Player/Head" unique_id=74443510 instance=ExtResource("1_y6ldt")]
+
+[node name="Camera3D" type="Camera3D" parent="Player/Head" unique_id=102613102]
+
+[node name="Feet" type="Node3D" parent="Player" unique_id=1246340893]
+
+[node name="Jump" type="AudioStreamPlayer3D" parent="Player/Feet" unique_id=1636638026]
+stream = ExtResource("2_nbkwn")
+volume_db = -21.053
+
+[node name="Footsteps" type="AudioStreamPlayer3D" parent="Player/Feet" unique_id=966586024]
+stream = ExtResource("2_nbkwn")
+volume_db = -29.474
+
+[node name="Landing" type="AudioStreamPlayer3D" parent="Player/Feet" unique_id=1672926310]
+stream = ExtResource("3_am073")
+
+[node name="Map" type="Node3D" parent="." unique_id=1676732882]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, -8.1618595)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Map" unique_id=2046999516]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, -1, -1, 8.1618595)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Map" unique_id=772835854]
+environment = SubResource("Environment_fj7yv")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Map" unique_id=1852204811]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.99999976, 8.1618595)
+material_override = SubResource("StandardMaterial3D_jta3l")
+use_collision = true
+size = Vector3(38, 0.001, 32)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Map" unique_id=749923531]
+material_override = SubResource("StandardMaterial3D_3fqxr")
+use_collision = true
+size = Vector3(3, 3, 3)
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="Map" unique_id=464580284]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.104351, 0, 0)
+material_override = SubResource("StandardMaterial3D_x5ytc")
+use_collision = true
+size = Vector3(3, 3, 3)
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="Map" unique_id=1252768748]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.4799447, -0.5, 0)
+material_override = SubResource("StandardMaterial3D_vmd5f")
+use_collision = true
+size = Vector3(3, 2, 3)
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="Map" unique_id=699935308]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.4799447, -1, 4.4000998)
+material_override = SubResource("StandardMaterial3D_npiv4")
+use_collision = true
+size = Vector3(3, 1, 3)
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=567207340]
+
+[node name="GameBoyShader" type="ColorRect" parent="UI" unique_id=212060055]
+material = SubResource("ShaderMaterial_0xyb7")
+offset_right = 1963.0
+offset_bottom = 1116.0
+mouse_filter = 2
+
+[node name="Crosshair" type="TextureRect" parent="UI" unique_id=1797697034]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("7_jta3l")
+stretch_mode = 2
+
+[node name="PauseMenu" type="Control" parent="UI" unique_id=259055732]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_jta3l")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/PauseMenu" unique_id=1133025044]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -227.5
+offset_top = -168.0
+offset_right = 227.5
+offset_bottom = 168.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/PauseMenu/MarginContainer" unique_id=1297770572]
+layout_mode = 2
+
+[node name="Volume" type="HBoxContainer" parent="UI/PauseMenu/MarginContainer/VBoxContainer" unique_id=1182549096]
+layout_mode = 2
+
+[node name="VolumeLabel" type="Label" parent="UI/PauseMenu/MarginContainer/VBoxContainer/Volume" unique_id=1370187422]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Volume"
+
+[node name="VolumeSlider" type="HSlider" parent="UI/PauseMenu/MarginContainer/VBoxContainer/Volume" unique_id=1385063254]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 4.0
+max_value = 20.0
+value = 5.0
+exp_edit = true
+
+[node name="VolumeReset" type="Button" parent="UI/PauseMenu/MarginContainer/VBoxContainer/Volume" unique_id=1718406285]
+layout_mode = 2
+text = "↩"
+
+[node name="ColorSteps" type="HBoxContainer" parent="UI/PauseMenu/MarginContainer/VBoxContainer" unique_id=4539979]
+layout_mode = 2
+
+[node name="ColorLabel" type="Label" parent="UI/PauseMenu/MarginContainer/VBoxContainer/ColorSteps" unique_id=1130762485]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Color Steps"
+
+[node name="ColorSimplification" type="HSlider" parent="UI/PauseMenu/MarginContainer/VBoxContainer/ColorSteps" unique_id=1946536721]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 4.0
+max_value = 20.0
+value = 5.0
+exp_edit = true
+
+[node name="ColorStepsReset" type="Button" parent="UI/PauseMenu/MarginContainer/VBoxContainer/ColorSteps" unique_id=2105635864]
+layout_mode = 2
+text = "↩"
+
+[node name="ShaderColor" type="HBoxContainer" parent="UI/PauseMenu/MarginContainer/VBoxContainer" unique_id=654107647]
+layout_mode = 2
+
+[node name="ColorLabel" type="Label" parent="UI/PauseMenu/MarginContainer/VBoxContainer/ShaderColor" unique_id=1703711181]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Game Colour"
+
+[node name="ColorPickerButton" type="ColorPickerButton" parent="UI/PauseMenu/MarginContainer/VBoxContainer/ShaderColor" unique_id=1192780865]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pick color"
+color = Color(1, 1, 1, 1)
+edit_alpha = false
+
+[node name="ShaderColorReset" type="Button" parent="UI/PauseMenu/MarginContainer/VBoxContainer/ShaderColor" unique_id=1128532151]
+layout_mode = 2
+text = "↩"
+
+[node name="Pixelation" type="HBoxContainer" parent="UI/PauseMenu/MarginContainer/VBoxContainer" unique_id=1037914925]
+layout_mode = 2
+
+[node name="PixelationLabel" type="Label" parent="UI/PauseMenu/MarginContainer/VBoxContainer/Pixelation" unique_id=1160920440]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Pixelation"
+
+[node name="Pixelation" type="HSlider" parent="UI/PauseMenu/MarginContainer/VBoxContainer/Pixelation" unique_id=1976474217]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.1
+max_value = 1.0
+step = 0.05
+value = 0.25
+
+[node name="PixelationReset" type="Button" parent="UI/PauseMenu/MarginContainer/VBoxContainer/Pixelation" unique_id=1897402557]
+layout_mode = 2
+text = "↩"
+
+[node name="Button2" type="Button" parent="UI/PauseMenu" unique_id=379883090]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1566216178]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.836389, 3.511345, 0)
+
+[connection signal="value_changed" from="UI/PauseMenu/MarginContainer/VBoxContainer/Volume/VolumeSlider" to="UI/PauseMenu" method="_on_volume_slider_value_changed"]
+[connection signal="pressed" from="UI/PauseMenu/MarginContainer/VBoxContainer/Volume/VolumeReset" to="UI/PauseMenu" method="_on_volume_reset_pressed"]
+[connection signal="value_changed" from="UI/PauseMenu/MarginContainer/VBoxContainer/ColorSteps/ColorSimplification" to="UI/PauseMenu" method="_on_color_simplification_value_changed"]
+[connection signal="pressed" from="UI/PauseMenu/MarginContainer/VBoxContainer/ColorSteps/ColorStepsReset" to="UI/PauseMenu" method="_on_color_steps_reset_pressed"]
+[connection signal="color_changed" from="UI/PauseMenu/MarginContainer/VBoxContainer/ShaderColor/ColorPickerButton" to="UI/PauseMenu" method="_on_color_picker_button_color_changed"]
+[connection signal="pressed" from="UI/PauseMenu/MarginContainer/VBoxContainer/ShaderColor/ShaderColorReset" to="UI/PauseMenu" method="_on_shader_color_reset_pressed"]
+[connection signal="value_changed" from="UI/PauseMenu/MarginContainer/VBoxContainer/Pixelation/Pixelation" to="UI/PauseMenu" method="_on_pixelation_value_changed"]
+[connection signal="pressed" from="UI/PauseMenu/MarginContainer/VBoxContainer/Pixelation/PixelationReset" to="UI/PauseMenu" method="_on_pixelation_reset_pressed"]
