@@ -8,8 +8,8 @@ script/source = "extends Node3D
 
 @onready var animation_player = $AnimationPlayer
 
-func attack(attack):
-	animation_player.play(attack)
+func attack(attack_code):
+	animation_player.play(attack_code)
 "
 
 [sub_resource type="Animation" id="Animation_nbeat"]
@@ -247,7 +247,10 @@ process_material = SubResource("ParticleProcessMaterial_0xyb7")
 draw_pass_1 = SubResource("QuadMesh_1pivh")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="TorchModel/GPUParticles3D" unique_id=2103433182]
-light_energy = 4.946
+light_energy = 6.279
+shadow_enabled = true
+omni_range = 79.967
+omni_attenuation = 2.0
 
 [node name="MeleeHitbox" type="Area3D" parent="." unique_id=1776900888]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.53801334, -2.081575)
