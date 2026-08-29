@@ -1,0 +1,585 @@
+[gd_scene format=3 uid="uid://do66cume0cppx"]
+
+[ext_resource type="Shader" uid="uid://ji7oi6bx8ps5" path="res://Assets/Shaders/GameBoy.gdshader" id="1_p3fck"]
+[ext_resource type="PackedScene" uid="uid://beudludnwujt4" path="res://Assets/Textures/hoggie2.glb" id="2_4gxqj"]
+[ext_resource type="Texture2D" uid="uid://d3yat8ou17spr" path="res://Assets/Textures/crosshair.png" id="2_twnyg"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_62dcu"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_klylv"]
+sky_material = SubResource("ProceduralSkyMaterial_62dcu")
+
+[sub_resource type="Environment" id="Environment_p3fck"]
+background_mode = 2
+sky = SubResource("Sky_klylv")
+glow_enabled = true
+
+[sub_resource type="GDScript" id="GDScript_55kwv"]
+resource_name = "MainMenuCamera"
+script/source = "extends Camera3D
+
+var myRotation = 0
+
+func _process(delta: float) -> void:
+	myRotation -= 0.05
+	if myRotation > 360:
+		myRotation = 0
+	rotation = Vector3(deg_to_rad(-20), deg_to_rad(myRotation), 0)
+"
+
+[sub_resource type="GDScript" id="GDScript_8mikk"]
+resource_name = "FPSCounter"
+script/source = "extends Label
+
+func _process(delta: float) -> void:
+	text = \"FPS: %d\" % Engine.get_frames_per_second()
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sqelc"]
+shader = ExtResource("1_p3fck")
+shader_parameter/color_one = Color(1, 1, 1, 1)
+shader_parameter/color_two = Color(0, 0, 0, 0)
+shader_parameter/number_of_colors = 10
+
+[sub_resource type="GDScript" id="GDScript_k0w1u"]
+resource_name = "StartMenu"
+script/source = "extends Control
+
+@onready var game_boy_shader: ColorRect = $\"../GameBoyShader\" 
+@onready var shader_material: ShaderMaterial = game_boy_shader.material as ShaderMaterial
+@onready var crosshair: TextureRect = $\"../Crosshair\"
+
+@onready var volume_slider: HSlider = $MarginContainer/VBoxContainer/SettingsContainer/Volume/VolumeSlider
+@onready var sensitivity_slider: HSlider = $MarginContainer/VBoxContainer/SettingsContainer/Sensitivity/SensitivitySlider
+@onready var color_simplification: HSlider = $MarginContainer/VBoxContainer/SettingsContainer/ColorSteps/ColorSimplification
+@onready var color_picker_button: ColorPickerButton = $MarginContainer/VBoxContainer/SettingsContainer/ShaderColor/ColorPickerButton
+@onready var color_picker_button_2: ColorPickerButton = $MarginContainer/VBoxContainer/SettingsContainer/ShaderColor2/ColorPickerButton2
+
+@onready var pixelation: HSlider = $MarginContainer/VBoxContainer/SettingsContainer/Pixelation/Pixelation
+@onready var fps_counter: Label = $\"../FPSCounter\"
+
+const DEFAULT_COLOUR_ONE = Color(0.724, 0.332, 0.09, 1.0)
+const DEFAULT_COLOUR_TWO = Color(0.086, 0.026, 0.053, 1.0)
+
+const DAMAGE_COLOR_ONE:= Color(1.0, 0.0, 0.0, 1.0)
+const DAMAGE_COLOR_TWO:= Color(0.0, 0.0, 0.0, 1.0)
+const PIXELATION_REC_TIME = 3.0 # SECONDS
+const COLOR_REC_TIME = 1.0
+static var mouse_sensitivity := 1.0
+
+func play_damage_visual():
+	shader_material.set_shader_parameter(\"color_one\", DAMAGE_COLOR_ONE)
+	shader_material.set_shader_parameter(\"color_two\", DAMAGE_COLOR_TWO)
+	get_viewport().scaling_3d_scale = 0.01
+	print(\"damage\")
+
+func _on_volume_slider_value_changed(value: float) -> void:
+	if value <= 0.0:
+		AudioServer.set_bus_mute(0, true)
+	else:
+		AudioServer.set_bus_mute(0, false)
+		AudioServer.set_bus_volume_db(0, linear_to_db(value))
+
+func _on_sensitivity_slider_value_changed(value: float) -> void:
+	mouse_sensitivity = value
+
+func _on_color_simplification_value_changed(value: int) -> void:
+	shader_material.set_shader_parameter(\"number_of_colors\", value)
+
+func _on_color_picker_button_color_changed(color: Color) -> void:
+	shader_material.set_shader_parameter(\"color_one\", color)
+
+func _on_color_picker_button_2_color_changed(color: Color) -> void:
+	shader_material.set_shader_parameter(\"color_two\", color)
+
+func _on_pixelation_value_changed(value: float) -> void:
+	get_viewport().scaling_3d_scale = value
+
+func _ready():
+	load_settings()
+	
+func move_toward_color(from: Color, to: Color, max_step: float) -> Color:
+	return Color(
+		move_toward(from.r, to.r, max_step),
+		move_toward(from.g, to.g, max_step),
+		move_toward(from.b, to.b, max_step),
+		move_toward(from.a, to.a, max_step)
+	)
+
+func _physics_process(delta: float) -> void:
+	var current_color = shader_material.get_shader_parameter(\"color_one\")
+	var current_color2 = shader_material.get_shader_parameter(\"color_two\")
+	var original_pixelation = pixelation.value
+	var current_pixelation = get_viewport().scaling_3d_scale
+	
+	if color_picker_button.color != current_color:
+		var color = move_toward_color(current_color, color_picker_button.color, delta / COLOR_REC_TIME)
+		shader_material.set_shader_parameter(\"color_one\", color)
+	
+	if color_picker_button_2.color != current_color2:
+		var color2 = move_toward_color(current_color2, color_picker_button_2.color, delta / COLOR_REC_TIME)
+		shader_material.set_shader_parameter(\"color_two\", color2)
+	
+	if current_pixelation != original_pixelation:
+		get_viewport().scaling_3d_scale = move_toward(current_pixelation, original_pixelation, delta / PIXELATION_REC_TIME)
+
+
+const SETTINGS_FILE := \"user://settings.cfg\"
+
+func save_settings() -> void:
+	var config := ConfigFile.new()
+
+	config.set_value(\"settings\", \"volume\", AudioServer.get_bus_volume_linear(0))
+	config.set_value(\"settings\", \"number_of_colors\", shader_material.get_shader_parameter(\"number_of_colors\"))
+	config.set_value(\"settings\", \"color_one\", shader_material.get_shader_parameter(\"color_one\"))
+	config.set_value(\"settings\", \"color_two\", shader_material.get_shader_parameter(\"color_two\"))
+	config.set_value(\"settings\", \"pixelation\", get_viewport().scaling_3d_scale)
+	config.set_value(\"settings\", \"sensitivity\", mouse_sensitivity)
+
+	config.save(SETTINGS_FILE)
+
+
+func load_settings() -> void:
+	var config := ConfigFile.new()
+
+	if config.load(SETTINGS_FILE) != OK:
+		return
+
+	# Volume
+	var volume = config.get_value(\"settings\", \"volume\", 1.0)
+	AudioServer.set_bus_volume_linear(0, volume)
+	volume_slider.value = volume
+
+	# Number of colours
+	var number_of_colors = config.get_value(\"settings\", \"number_of_colors\", 4)
+	shader_material.set_shader_parameter(\"number_of_colors\", number_of_colors)
+	color_simplification.value = number_of_colors
+
+	# Shader colour
+	var color_one = config.get_value(\"settings\", \"color_one\", DEFAULT_COLOUR_ONE)
+	shader_material.set_shader_parameter(\"color_one\", color_one)
+	color_picker_button.color = color_one
+
+	var color_two = config.get_value(\"settings\", \"color_two\", DEFAULT_COLOUR_TWO)
+	shader_material.set_shader_parameter(\"color_two\", color_two)
+	color_picker_button_2.color = color_two
+
+	# Pixelation
+	var pixelation_value = config.get_value(\"settings\", \"pixelation\", 1.0)
+	get_viewport().scaling_3d_scale = pixelation_value
+	pixelation.value = pixelation_value
+	
+	var sensitivity = config.get_value(\"settings\", \"sensitivity\", 1.0)
+	mouse_sensitivity = sensitivity
+	sensitivity_slider.value = sensitivity
+
+func _on_volume_reset_pressed() -> void:
+	volume_slider.value = 1.0
+
+func _on_sensitivity_reset_pressed() -> void:
+	sensitivity_slider.value = 1.0
+	_on_sensitivity_slider_value_changed(1.0)
+
+func _on_color_steps_reset_pressed() -> void:
+	color_simplification.value = 5.0
+	_on_color_simplification_value_changed(5)
+
+func _on_shader_color_reset_pressed() -> void:
+	var default_color := DEFAULT_COLOUR_ONE
+	color_picker_button.color = default_color
+	_on_color_picker_button_color_changed(default_color)
+
+func _on_shader_color_reset_2_pressed() -> void:
+	var default_color := DEFAULT_COLOUR_TWO
+	color_picker_button_2.color = default_color
+	_on_color_picker_button_2_color_changed(default_color)
+
+func _on_pixelation_reset_pressed() -> void:
+	pixelation.value = 0.25
+	_on_pixelation_value_changed(0.25)
+
+func _on_fps_button_toggled(toggled_on: bool) -> void:
+	fps_counter.visible=(toggled_on)
+
+func _on_quit_pressed() -> void:
+	save_settings()
+	get_tree().quit()
+
+func _on_start_pressed() -> void:
+	save_settings()
+	get_tree().change_scene_to_file(\"res://Scenes/world.tscn\")
+
+func _on_the_surface_pressed() -> void:
+	get_tree().change_scene_to_file(\"res://Scenes/world.tscn\")
+
+func _on_catacombs_pressed() -> void:
+	get_tree().change_scene_to_file(\"res://Scenes/world.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_klylv"]
+resource_name = "settings"
+script/source = "extends VBoxContainer
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+"
+
+[sub_resource type="GDScript" id="GDScript_0xyb7"]
+resource_name = "LevelSelector"
+script/source = "extends Button
+
+var levels: Array[Control]
+var visibile = false
+
+func _ready() -> void:
+	for child in get_parent().get_children():
+		if child != self and child is Control:
+			levels.append(child)
+	for setting in levels:
+		setting.visible = false
+	pressed.connect(_toggle_settings)
+
+func _toggle_settings() -> void:
+	for level in levels:
+		level.visible = !level.visible
+	visibile = !visibile
+	self.text = \"Level Select\"
+	if visibile == true:
+		self.text = \"Level Select ▼\"
+"
+
+[sub_resource type="GDScript" id="GDScript_1pivh"]
+resource_name = "Settings"
+script/source = "extends Button
+
+var settings: Array[Control]
+var visibile = false
+
+func _ready() -> void:
+	for child in get_parent().get_children():
+		if child != self and child is Control:
+			settings.append(child)
+	for setting in settings:
+		setting.visible = false
+	pressed.connect(_toggle_settings)
+
+func _toggle_settings() -> void:
+	for setting in settings:
+		setting.visible = !setting.visible
+	visibile = !visibile
+	self.text = \"Settings\"
+	if visibile == true:
+		self.text = \"Settings ▼\"
+"
+
+[node name="Node3D" type="Node3D" unique_id=219128308]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1107193590]
+environment = SubResource("Environment_p3fck")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=269258733]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=728743885]
+transform = Transform3D(1, 0, 0, 0, 0.9414209, 0.33723387, 0, -0.33723387, 0.9414209, 0, 0, 0)
+current = true
+script = SubResource("GDScript_55kwv")
+
+[node name="hoggie2" parent="." unique_id=1459156745 instance=ExtResource("2_4gxqj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.32567203, -3.1483502, -6.0085993)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="." unique_id=2024636805]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -4.200082, -1.022665)
+use_collision = true
+size = Vector3(38, 0.001, 32)
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=1551754299]
+
+[node name="Crosshair" type="TextureRect" parent="UI" unique_id=1854775384]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_twnyg")
+stretch_mode = 2
+
+[node name="FPSCounter" type="Label" parent="UI" unique_id=708267188]
+offset_left = 6.0
+offset_top = 3.0
+offset_right = 46.0
+offset_bottom = 26.0
+script = SubResource("GDScript_8mikk")
+
+[node name="GameBoyShader" type="ColorRect" parent="UI" unique_id=234238814]
+material = SubResource("ShaderMaterial_sqelc")
+offset_right = 1963.0
+offset_bottom = 1116.0
+mouse_filter = 2
+
+[node name="StartMenu" type="Control" parent="UI" unique_id=273598182]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_k0w1u")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/StartMenu" unique_id=618675934]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -227.5
+offset_top = -168.0
+offset_right = 227.5
+offset_bottom = 168.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/StartMenu/MarginContainer" unique_id=1771050708]
+layout_mode = 2
+
+[node name="Start" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer" unique_id=1388152252]
+process_mode = 3
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Start"
+
+[node name="LevelSelectContainer" type="VBoxContainer" parent="UI/StartMenu/MarginContainer/VBoxContainer" unique_id=952097638]
+layout_mode = 2
+script = SubResource("GDScript_klylv")
+
+[node name="LevelSelectButton" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer/LevelSelectContainer" unique_id=251015548]
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Level Select"
+script = SubResource("GDScript_0xyb7")
+
+[node name="LevelsContainer" type="VBoxContainer" parent="UI/StartMenu/MarginContainer/VBoxContainer/LevelSelectContainer" unique_id=236057690]
+layout_mode = 2
+
+[node name="TheSurface" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer/LevelSelectContainer/LevelsContainer" unique_id=843483214]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "The Surface (Tutorial)"
+
+[node name="Catacombs" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer/LevelSelectContainer/LevelsContainer" unique_id=1534246001]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "Catacombs"
+
+[node name="Caverns" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer/LevelSelectContainer/LevelsContainer" unique_id=1035306061]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+disabled = true
+text = "Caverns"
+
+[node name="TheEdge" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer/LevelSelectContainer/LevelsContainer" unique_id=1285565514]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+disabled = true
+text = "The Edge"
+
+[node name="FieryDepths" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer/LevelSelectContainer/LevelsContainer" unique_id=1113313173]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+disabled = true
+text = "Fiery Depths"
+
+[node name="HellItself" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer/LevelSelectContainer/LevelsContainer" unique_id=233040036]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+disabled = true
+text = "Hell Itself"
+
+[node name="SettingsContainer" type="VBoxContainer" parent="UI/StartMenu/MarginContainer/VBoxContainer" unique_id=14325418]
+layout_mode = 2
+script = SubResource("GDScript_klylv")
+
+[node name="SettingsButton" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer" unique_id=2091466358]
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Settings"
+script = SubResource("GDScript_1pivh")
+
+[node name="Volume" type="HBoxContainer" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer" unique_id=729649156]
+layout_mode = 2
+
+[node name="VolumeLabel" type="Label" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/Volume" unique_id=924142223]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Volume"
+
+[node name="VolumeSlider" type="HSlider" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/Volume" unique_id=1964631081]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = -0.01
+max_value = 2.0
+step = 0.05
+value = 0.99
+exp_edit = true
+
+[node name="VolumeReset" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/Volume" unique_id=998704922]
+layout_mode = 2
+text = "↩"
+
+[node name="Sensitivity" type="HBoxContainer" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer" unique_id=151996797]
+layout_mode = 2
+
+[node name="SensitivityLabel" type="Label" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/Sensitivity" unique_id=802625328]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Sensitivity"
+
+[node name="SensitivitySlider" type="HSlider" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/Sensitivity" unique_id=386733094]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.2
+max_value = 3.0
+step = 0.05
+value = 1.0
+
+[node name="SensitivityReset" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/Sensitivity" unique_id=1131453353]
+layout_mode = 2
+text = "↩"
+
+[node name="ColorSteps" type="HBoxContainer" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer" unique_id=1250796261]
+layout_mode = 2
+
+[node name="ColorLabel" type="Label" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/ColorSteps" unique_id=350786475]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Color Steps"
+
+[node name="ColorSimplification" type="HSlider" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/ColorSteps" unique_id=999069157]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 4.0
+max_value = 20.0
+value = 5.0
+exp_edit = true
+
+[node name="ColorStepsReset" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/ColorSteps" unique_id=1003340528]
+layout_mode = 2
+text = "↩"
+
+[node name="ShaderColor" type="HBoxContainer" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer" unique_id=1108868428]
+layout_mode = 2
+
+[node name="ColorLabel" type="Label" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/ShaderColor" unique_id=2081906229]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Colour one"
+
+[node name="ColorPickerButton" type="ColorPickerButton" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/ShaderColor" unique_id=477535581]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pick color"
+color = Color(0.8350949, 0.38681313, 3.85046e-07, 1)
+edit_alpha = false
+
+[node name="ShaderColorReset" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/ShaderColor" unique_id=153668118]
+layout_mode = 2
+text = "↩"
+
+[node name="ShaderColor2" type="HBoxContainer" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer" unique_id=314660838]
+layout_mode = 2
+
+[node name="ColorLabel2" type="Label" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/ShaderColor2" unique_id=2109667778]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Colour two"
+
+[node name="ColorPickerButton2" type="ColorPickerButton" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/ShaderColor2" unique_id=1578216105]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pick color"
+color = Color(0.20006713, 0.108898304, 0.17445198, 1)
+edit_alpha = false
+
+[node name="ShaderColorReset2" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/ShaderColor2" unique_id=871692844]
+layout_mode = 2
+text = "↩"
+
+[node name="Pixelation" type="HBoxContainer" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer" unique_id=752440184]
+layout_mode = 2
+
+[node name="PixelationLabel" type="Label" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/Pixelation" unique_id=1391863829]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Pixelation"
+
+[node name="Pixelation" type="HSlider" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/Pixelation" unique_id=1326444311]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.1
+max_value = 1.0
+step = 0.05
+value = 0.25
+
+[node name="PixelationReset" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/Pixelation" unique_id=1206387690]
+layout_mode = 2
+text = "↩"
+
+[node name="FPSCounter" type="HBoxContainer" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer" unique_id=744974013]
+layout_mode = 2
+
+[node name="FPSLabel" type="Label" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/FPSCounter" unique_id=1885370374]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "FPS Counter"
+
+[node name="FPSButton" type="CheckButton" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/FPSCounter" unique_id=2097405336]
+layout_mode = 2
+size_flags_horizontal = 3
+button_pressed = true
+
+[node name="Quit" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer" unique_id=877562960]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Quit"
+
+[connection signal="pressed" from="UI/StartMenu/MarginContainer/VBoxContainer/Start" to="UI/StartMenu" method="_on_start_pressed"]
+[connection signal="pressed" from="UI/StartMenu/MarginContainer/VBoxContainer/LevelSelectContainer/LevelsContainer/TheSurface" to="UI/StartMenu" method="_on_the_surface_pressed"]
+[connection signal="pressed" from="UI/StartMenu/MarginContainer/VBoxContainer/LevelSelectContainer/LevelsContainer/Catacombs" to="UI/StartMenu" method="_on_catacombs_pressed"]
+[connection signal="value_changed" from="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/Volume/VolumeSlider" to="UI/StartMenu" method="_on_volume_slider_value_changed"]
+[connection signal="pressed" from="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/Volume/VolumeReset" to="UI/StartMenu" method="_on_volume_reset_pressed"]
+[connection signal="value_changed" from="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/Sensitivity/SensitivitySlider" to="UI/StartMenu" method="_on_sensitivity_slider_value_changed"]
+[connection signal="pressed" from="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/Sensitivity/SensitivityReset" to="UI/StartMenu" method="_on_sensitivity_reset_pressed"]
+[connection signal="value_changed" from="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/ColorSteps/ColorSimplification" to="UI/StartMenu" method="_on_color_simplification_value_changed"]
+[connection signal="pressed" from="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/ColorSteps/ColorStepsReset" to="UI/StartMenu" method="_on_color_steps_reset_pressed"]
+[connection signal="color_changed" from="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/ShaderColor/ColorPickerButton" to="UI/StartMenu" method="_on_color_picker_button_color_changed"]
+[connection signal="pressed" from="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/ShaderColor/ShaderColorReset" to="UI/StartMenu" method="_on_shader_color_reset_pressed"]
+[connection signal="color_changed" from="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/ShaderColor2/ColorPickerButton2" to="UI/StartMenu" method="_on_color_picker_button_2_color_changed"]
+[connection signal="pressed" from="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/ShaderColor2/ShaderColorReset2" to="UI/StartMenu" method="_on_shader_color_reset_2_pressed"]
+[connection signal="value_changed" from="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/Pixelation/Pixelation" to="UI/StartMenu" method="_on_pixelation_value_changed"]
+[connection signal="pressed" from="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/Pixelation/PixelationReset" to="UI/StartMenu" method="_on_pixelation_reset_pressed"]
+[connection signal="toggled" from="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer/FPSCounter/FPSButton" to="UI/StartMenu" method="_on_fps_button_toggled"]
+[connection signal="pressed" from="UI/StartMenu/MarginContainer/VBoxContainer/Quit" to="UI/StartMenu" method="_on_quit_pressed"]

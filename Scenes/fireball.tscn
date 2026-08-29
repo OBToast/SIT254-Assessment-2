@@ -1,0 +1,249 @@
+[gd_scene format=3 uid="uid://bw13s4h5hsrsv"]
+
+[ext_resource type="AudioStream" uid="uid://r5vfkhwxkg8v" path="res://Assets/Audio/FireballThrow.mp3" id="1_0mxqg"]
+[ext_resource type="AudioStream" uid="uid://d1joptycqsn68" path="res://Assets/Audio/FireballPass.mp3" id="1_ne4qj"]
+[ext_resource type="Texture2D" uid="uid://bqdibs8fridpa" path="res://Assets/Textures/the-image-is-of-a-white-smoke-cloud-with-a-lot-of-white-smoke-png.webp" id="1_xi7wk"]
+[ext_resource type="AudioStream" uid="uid://y7w0rft2pqq7" path="res://Assets/Audio/FireballExplode.mp3" id="2_hcgvv"]
+
+[sub_resource type="GDScript" id="GDScript_xi7wk"]
+resource_name = "fireball"
+script/source = "extends Area3D
+
+@export var speed: float = 20.0
+@export var damage: float = 10.0
+@export var lifetime: float = 5.0
+@export var light_fade_time: float = 0.15
+@export var flash_multiplier: float = 6.0
+@export var flash_time: float = 0.03
+@export var explosion_radius: float = 4.0
+@export var explosion_collision_mask: int = 1  # set to your Enemies layer
+
+@onready var explode_sfx: AudioStreamPlayer3D = $ExplodeSFX
+
+@onready var explosion: GPUParticles3D = $Explosion
+@onready var omni_light_3d: OmniLight3D = $OmniLight3D
+
+var velocity: Vector3 = Vector3.ZERO
+var has_exploded: bool = false
+
+func _ready() -> void:
+	await get_tree().create_timer(lifetime).timeout
+	if is_instance_valid(self):
+		queue_free()
+
+func _physics_process(delta: float) -> void:
+	global_position += velocity * delta
+
+func _on_body_entered(_body: Node3D) -> void:
+	_explode()
+
+func _on_area_entered(_area: Area3D) -> void:
+	_explode()
+
+func _explode() -> void:
+	if has_exploded:
+		return
+	has_exploded = true
+
+	velocity = Vector3.ZERO
+	set_deferred(\"monitoring\", false)
+	set_deferred(\"monitorable\", false)
+
+	_apply_aoe_damage()
+	explode_sfx.reparent(get_tree().current_scene)
+	explode_sfx.play()
+
+	explosion.reparent(get_tree().current_scene)
+	explosion.emitting = true
+
+	omni_light_3d.reparent(get_tree().current_scene)
+	var base_energy: float = omni_light_3d.light_energy
+	var peak_energy: float = base_energy * flash_multiplier
+
+	var tween := omni_light_3d.create_tween()
+	tween.tween_property(omni_light_3d, \"light_energy\", peak_energy, flash_time)
+	tween.tween_property(omni_light_3d, \"light_energy\", 0.0, light_fade_time).set_ease(Tween.EASE_OUT)
+	tween.finished.connect(func():
+		if is_instance_valid(omni_light_3d):
+			omni_light_3d.queue_free()
+	)
+
+	queue_free()
+
+	await get_tree().create_timer(explosion.lifetime).timeout
+	if is_instance_valid(explosion):
+		explosion.queue_free()
+
+func _apply_aoe_damage() -> void:
+	var sphere := SphereShape3D.new()
+	sphere.radius = explosion_radius
+
+	var query := PhysicsShapeQueryParameters3D.new()
+	query.shape = sphere
+	query.transform = Transform3D(Basis(), global_position)
+	query.collision_mask = explosion_collision_mask
+	query.collide_with_bodies = true
+	query.collide_with_areas = true
+	query.exclude = [self.get_rid()]
+
+	var space_state := get_world_3d().direct_space_state
+	var results: Array[Dictionary] = space_state.intersect_shape(query, 32)
+
+	var already_hit: Array[Object] = []
+
+	for result: Dictionary in results:
+		var collider: Object = result.get(\"collider\")
+		if collider == null or collider in already_hit:
+			continue
+		already_hit.append(collider)
+
+		if collider.has_method(\"take_damage\"):
+			collider.take_damage(damage, \"fireball\")
+"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_xi7wk"]
+load_path = "res://.godot/imported/the-image-is-of-a-white-smoke-cloud-with-a-lot-of-white-smoke-png.webp-864557e553e6577d0adc1c9a7aea8aa0.s3tc.ctex"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ne4qj"]
+transparency = 1
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("CompressedTexture2D_xi7wk")
+emission_enabled = true
+emission = Color(4.6845813, 1.9108214, 0.90218157, 1)
+emission_energy_multiplier = 0.13
+heightmap_scale = 15.667
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="Gradient" id="Gradient_xi7wk"]
+offsets = PackedFloat32Array(0, 0.14164306, 1)
+colors = PackedColorArray(0, 0, 0, 0, 0.56, 0.56, 0.56, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_0mxqg"]
+gradient = SubResource("Gradient_xi7wk")
+
+[sub_resource type="Curve" id="Curve_ne4qj"]
+_limits = [0.0, 1.0, 0.0, 5.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.63324535, 0.32584268), 0.0, 0.0, 0, 0, Vector2(2.4934034, 0.112359524), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_hcgvv"]
+curve = SubResource("Curve_ne4qj")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_cpagb"]
+lifetime_randomness = 0.16
+particle_flag_rotate_y = true
+emission_shape_scale = Vector3(0.1, 0.1, 0.1)
+emission_shape = 1
+emission_sphere_radius = 1.0
+angle_min = -208.79999
+angle_max = 128.70001
+use_rotation_3d = true
+rotation_3d_min = Vector3(0, 0, 0)
+rotation_3d_max = Vector3(300, 300, 300)
+spread = 180.0
+initial_velocity_max = 19.189999
+angular_velocity_min = -46.610016
+angular_velocity_max = 22.809984
+gravity = Vector3(0, 0, 0)
+scale_curve = SubResource("CurveTexture_hcgvv")
+color_ramp = SubResource("GradientTexture1D_0mxqg")
+
+[sub_resource type="QuadMesh" id="QuadMesh_cpagb"]
+size = Vector2(0.4, 0.4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0mxqg"]
+transparency = 1
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("1_xi7wk")
+emission_enabled = true
+emission = Color(4.6845813, 1.9108214, 0.90218157, 1)
+emission_energy_multiplier = 0.13
+heightmap_scale = 15.667
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="Gradient" id="Gradient_ne4qj"]
+offsets = PackedFloat32Array(0, 0.14164306, 1)
+colors = PackedColorArray(0, 0, 0, 0, 0.56, 0.56, 0.56, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_036b0"]
+gradient = SubResource("Gradient_ne4qj")
+
+[sub_resource type="Curve" id="Curve_xi7wk"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.10026384, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_xi7wk"]
+curve = SubResource("Curve_xi7wk")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_hcgvv"]
+lifetime_randomness = 0.16
+particle_flag_rotate_y = true
+emission_shape_scale = Vector3(0.1, 0.1, 0.1)
+emission_shape = 1
+emission_sphere_radius = 1.0
+angle_min = -208.79999
+angle_max = 128.70001
+use_rotation_3d = true
+rotation_3d_min = Vector3(0, 0, 0)
+rotation_3d_max = Vector3(300, 300, 300)
+spread = 180.0
+angular_velocity_min = -46.610016
+angular_velocity_max = 22.809984
+gravity = Vector3(0, 0, 0)
+scale_curve = SubResource("CurveTexture_xi7wk")
+color_ramp = SubResource("GradientTexture1D_036b0")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_1pivh"]
+radius = 0.3947418
+
+[node name="Area3D" type="Area3D" unique_id=246577747]
+collision_layer = 3
+script = SubResource("GDScript_xi7wk")
+
+[node name="PassingSFX" type="AudioStreamPlayer3D" parent="." unique_id=2028774391]
+stream = ExtResource("1_ne4qj")
+volume_db = -23.75
+autoplay = true
+
+[node name="ExplodeSFX" type="AudioStreamPlayer3D" parent="." unique_id=1887977666]
+stream = ExtResource("2_hcgvv")
+volume_db = -14.672
+
+[node name="ThrowSFX" type="AudioStreamPlayer3D" parent="." unique_id=1232352742]
+stream = ExtResource("1_0mxqg")
+volume_db = -14.672
+autoplay = true
+
+[node name="Explosion" type="GPUParticles3D" parent="." unique_id=248606032]
+material_override = SubResource("StandardMaterial3D_ne4qj")
+emitting = false
+amount = 100
+one_shot = true
+speed_scale = 1.86
+explosiveness = 1.0
+randomness = 0.12
+process_material = SubResource("ParticleProcessMaterial_cpagb")
+draw_pass_1 = SubResource("QuadMesh_cpagb")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=1679638474]
+light_energy = 7.705
+
+[node name="FireballParticles" type="GPUParticles3D" parent="." unique_id=1524916117]
+material_override = SubResource("StandardMaterial3D_0mxqg")
+amount = 32
+speed_scale = 1.86
+randomness = 0.12
+process_material = SubResource("ParticleProcessMaterial_hcgvv")
+draw_pass_1 = SubResource("QuadMesh_cpagb")
+
+[node name="FireballCollision" type="CollisionShape3D" parent="." unique_id=934843875]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, 0, 0)
+shape = SubResource("SphereShape3D_1pivh")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

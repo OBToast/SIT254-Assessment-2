@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://df4mcb303uhno"
-path.s3tc="res://.godot/imported/FOG.png-6cc928244d041c2eaa9fe980ca7e3d9a.s3tc.ctex"
+uid="uid://dk14lvx574qiy"
+path.s3tc="res://.godot/imported/1.png-0773e9168e63a7db62a9bd77aa536237.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Assets/Textures/FOG.png"
-dest_files=["res://.godot/imported/FOG.png-6cc928244d041c2eaa9fe980ca7e3d9a.s3tc.ctex"]
+source_file="res://Assets/Enemies/Enemy1Attack/1.png"
+dest_files=["res://.godot/imported/1.png-0773e9168e63a7db62a9bd77aa536237.s3tc.ctex"]
 
 [params]
 

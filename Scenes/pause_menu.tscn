@@ -1,0 +1,251 @@
+[gd_scene format=3 uid="uid://ot1h486b3uwg"]
+
+[ext_resource type="Script" uid="uid://x4d0jwqotfk3" path="res://Scripts/PauseMenu.gd" id="1_emv3i"]
+
+[sub_resource type="GDScript" id="GDScript_klylv"]
+resource_name = "settings"
+script/source = "extends VBoxContainer
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+"
+
+[sub_resource type="GDScript" id="GDScript_1pivh"]
+resource_name = "Settings"
+script/source = "extends Button
+
+var settings: Array[Control]
+var visibile = false
+
+func _ready() -> void:
+	for child in get_parent().get_children():
+		if child != self and child is Control:
+			settings.append(child)
+	for setting in settings:
+		setting.visible = false
+	pressed.connect(_toggle_settings)
+
+func _toggle_settings() -> void:
+	for setting in settings:
+		setting.visible = !setting.visible
+	visibile = !visibile
+	self.text = \"Settings\"
+	if visibile == true:
+		self.text = \"Settings ▼\"
+"
+
+[node name="PauseMenu" type="Control" unique_id=273598182]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_emv3i")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=618675934]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -227.5
+offset_top = -168.0
+offset_right = 227.5
+offset_bottom = 168.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1771050708]
+layout_mode = 2
+
+[node name="Resume" type="Button" parent="MarginContainer/VBoxContainer" unique_id=716308538]
+process_mode = 3
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Resume"
+
+[node name="SettingsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=14325418]
+layout_mode = 2
+script = SubResource("GDScript_klylv")
+
+[node name="SettingsButton" type="Button" parent="MarginContainer/VBoxContainer/SettingsContainer" unique_id=2091466358]
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Settings"
+script = SubResource("GDScript_1pivh")
+
+[node name="Volume" type="HBoxContainer" parent="MarginContainer/VBoxContainer/SettingsContainer" unique_id=729649156]
+layout_mode = 2
+
+[node name="VolumeLabel" type="Label" parent="MarginContainer/VBoxContainer/SettingsContainer/Volume" unique_id=924142223]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Volume"
+
+[node name="VolumeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/SettingsContainer/Volume" unique_id=1964631081]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = -0.01
+max_value = 2.0
+step = 0.05
+value = 0.99
+exp_edit = true
+
+[node name="VolumeReset" type="Button" parent="MarginContainer/VBoxContainer/SettingsContainer/Volume" unique_id=998704922]
+layout_mode = 2
+text = "↩"
+
+[node name="Sensitivity" type="HBoxContainer" parent="MarginContainer/VBoxContainer/SettingsContainer" unique_id=151996797]
+layout_mode = 2
+
+[node name="SensitivityLabel" type="Label" parent="MarginContainer/VBoxContainer/SettingsContainer/Sensitivity" unique_id=802625328]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Sensitivity"
+
+[node name="SensitivitySlider" type="HSlider" parent="MarginContainer/VBoxContainer/SettingsContainer/Sensitivity" unique_id=386733094]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.2
+max_value = 3.0
+step = 0.05
+value = 1.0
+
+[node name="SensitivityReset" type="Button" parent="MarginContainer/VBoxContainer/SettingsContainer/Sensitivity" unique_id=1131453353]
+layout_mode = 2
+text = "↩"
+
+[node name="ColorSteps" type="HBoxContainer" parent="MarginContainer/VBoxContainer/SettingsContainer" unique_id=1250796261]
+layout_mode = 2
+
+[node name="ColorLabel" type="Label" parent="MarginContainer/VBoxContainer/SettingsContainer/ColorSteps" unique_id=350786475]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Color Steps"
+
+[node name="ColorSimplification" type="HSlider" parent="MarginContainer/VBoxContainer/SettingsContainer/ColorSteps" unique_id=999069157]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 4.0
+max_value = 20.0
+value = 5.0
+exp_edit = true
+
+[node name="ColorStepsReset" type="Button" parent="MarginContainer/VBoxContainer/SettingsContainer/ColorSteps" unique_id=1003340528]
+layout_mode = 2
+text = "↩"
+
+[node name="ShaderColor" type="HBoxContainer" parent="MarginContainer/VBoxContainer/SettingsContainer" unique_id=1108868428]
+layout_mode = 2
+
+[node name="ColorLabel" type="Label" parent="MarginContainer/VBoxContainer/SettingsContainer/ShaderColor" unique_id=2081906229]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Colour one"
+
+[node name="ColorPickerButton" type="ColorPickerButton" parent="MarginContainer/VBoxContainer/SettingsContainer/ShaderColor" unique_id=477535581]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pick color"
+color = Color(0.8350949, 0.38681313, 3.85046e-07, 1)
+edit_alpha = false
+
+[node name="ShaderColorReset" type="Button" parent="MarginContainer/VBoxContainer/SettingsContainer/ShaderColor" unique_id=153668118]
+layout_mode = 2
+text = "↩"
+
+[node name="ShaderColor2" type="HBoxContainer" parent="MarginContainer/VBoxContainer/SettingsContainer" unique_id=314660838]
+layout_mode = 2
+
+[node name="ColorLabel2" type="Label" parent="MarginContainer/VBoxContainer/SettingsContainer/ShaderColor2" unique_id=2109667778]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Colour two"
+
+[node name="ColorPickerButton2" type="ColorPickerButton" parent="MarginContainer/VBoxContainer/SettingsContainer/ShaderColor2" unique_id=1578216105]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pick color"
+color = Color(0.20006713, 0.108898304, 0.17445198, 1)
+edit_alpha = false
+
+[node name="ShaderColorReset2" type="Button" parent="MarginContainer/VBoxContainer/SettingsContainer/ShaderColor2" unique_id=871692844]
+layout_mode = 2
+text = "↩"
+
+[node name="Pixelation" type="HBoxContainer" parent="MarginContainer/VBoxContainer/SettingsContainer" unique_id=752440184]
+layout_mode = 2
+
+[node name="PixelationLabel" type="Label" parent="MarginContainer/VBoxContainer/SettingsContainer/Pixelation" unique_id=1391863829]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Pixelation"
+
+[node name="Pixelation" type="HSlider" parent="MarginContainer/VBoxContainer/SettingsContainer/Pixelation" unique_id=1326444311]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.1
+max_value = 1.0
+step = 0.05
+value = 0.25
+
+[node name="PixelationReset" type="Button" parent="MarginContainer/VBoxContainer/SettingsContainer/Pixelation" unique_id=1206387690]
+layout_mode = 2
+text = "↩"
+
+[node name="FPSCounter" type="HBoxContainer" parent="MarginContainer/VBoxContainer/SettingsContainer" unique_id=744974013]
+layout_mode = 2
+
+[node name="FPSLabel" type="Label" parent="MarginContainer/VBoxContainer/SettingsContainer/FPSCounter" unique_id=1885370374]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "FPS Counter"
+
+[node name="FPSButton" type="CheckButton" parent="MarginContainer/VBoxContainer/SettingsContainer/FPSCounter" unique_id=2097405336]
+layout_mode = 2
+size_flags_horizontal = 3
+button_pressed = true
+
+[node name="QuitToMenu" type="Button" parent="MarginContainer/VBoxContainer" unique_id=1550916395]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Quit To Menu"
+
+[node name="Quit" type="Button" parent="MarginContainer/VBoxContainer" unique_id=877562960]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Quit"
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Resume" to="." method="_on_resume_pressed"]
+[connection signal="value_changed" from="MarginContainer/VBoxContainer/SettingsContainer/Volume/VolumeSlider" to="." method="_on_volume_slider_value_changed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/SettingsContainer/Volume/VolumeReset" to="." method="_on_volume_reset_pressed"]
+[connection signal="value_changed" from="MarginContainer/VBoxContainer/SettingsContainer/Sensitivity/SensitivitySlider" to="." method="_on_sensitivity_slider_value_changed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/SettingsContainer/Sensitivity/SensitivityReset" to="." method="_on_sensitivity_reset_pressed"]
+[connection signal="value_changed" from="MarginContainer/VBoxContainer/SettingsContainer/ColorSteps/ColorSimplification" to="." method="_on_color_simplification_value_changed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/SettingsContainer/ColorSteps/ColorStepsReset" to="." method="_on_color_steps_reset_pressed"]
+[connection signal="color_changed" from="MarginContainer/VBoxContainer/SettingsContainer/ShaderColor/ColorPickerButton" to="." method="_on_color_picker_button_color_changed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/SettingsContainer/ShaderColor/ShaderColorReset" to="." method="_on_shader_color_reset_pressed"]
+[connection signal="color_changed" from="MarginContainer/VBoxContainer/SettingsContainer/ShaderColor2/ColorPickerButton2" to="." method="_on_color_picker_button_2_color_changed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/SettingsContainer/ShaderColor2/ShaderColorReset2" to="." method="_on_shader_color_reset_2_pressed"]
+[connection signal="value_changed" from="MarginContainer/VBoxContainer/SettingsContainer/Pixelation/Pixelation" to="." method="_on_pixelation_value_changed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/SettingsContainer/Pixelation/PixelationReset" to="." method="_on_pixelation_reset_pressed"]
+[connection signal="toggled" from="MarginContainer/VBoxContainer/SettingsContainer/FPSCounter/FPSButton" to="." method="_on_fps_button_toggled"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/QuitToMenu" to="." method="_on_quit_to_menu_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Quit" to="." method="_on_quit_pressed"]

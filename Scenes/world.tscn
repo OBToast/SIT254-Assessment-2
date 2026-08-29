@@ -1,10 +1,14 @@
 [gd_scene format=3 uid="uid://5h0tw72l0pvg"]
 
-[ext_resource type="PackedScene" uid="uid://bbym4e13vbn8q" path="res://Scences/torch.tscn" id="1_y6ldt"]
+[ext_resource type="PackedScene" uid="uid://bw13s4h5hsrsv" path="res://Scenes/fireball.tscn" id="1_t2t4p"]
+[ext_resource type="PackedScene" uid="uid://bbym4e13vbn8q" path="res://Scenes/torch.tscn" id="1_y6ldt"]
+[ext_resource type="AudioStream" uid="uid://bbl8v7yfgx724" path="res://Assets/Audio/PlayerHurt1.mp3" id="1_yq1aw"]
 [ext_resource type="AudioStream" uid="uid://bk6hddlmrik6d" path="res://Assets/Audio/Footstep.wav" id="2_nbkwn"]
 [ext_resource type="AudioStream" uid="uid://cjtdiskr42o2b" path="res://Assets/Audio/Landing.wav" id="3_am073"]
+[ext_resource type="AudioStream" uid="uid://cl7aumsu6lchg" path="res://Assets/Audio/PlayerHurt3.mp3" id="3_no8kt"]
 [ext_resource type="AudioStream" uid="uid://dw5u75ghkkpfc" path="res://Assets/Audio/Dash.wav" id="4_vmd5f"]
-[ext_resource type="PackedScene" uid="uid://teoju7y1y05u" path="res://Scences/enemy.tscn" id="4_x5ytc"]
+[ext_resource type="PackedScene" uid="uid://teoju7y1y05u" path="res://Scenes/enemy.tscn" id="4_x5ytc"]
+[ext_resource type="AudioStream" uid="uid://bpgu63gvn5ldr" path="res://Assets/Audio/PlayerHurt4.mp3" id="4_xbk3s"]
 [ext_resource type="AudioStream" uid="uid://cmjrfu5fnilvj" path="res://Assets/Audio/Slam.wav" id="5_npiv4"]
 [ext_resource type="Texture2D" uid="uid://du3risjigar4i" path="res://Assets/Textures/orange_dev.jpg" id="5_qk82f"]
 [ext_resource type="Shader" uid="uid://ji7oi6bx8ps5" path="res://Assets/Shaders/GameBoy.gdshader" id="6_qk82f"]
@@ -12,7 +16,8 @@
 [ext_resource type="Texture2D" uid="uid://d3yat8ou17spr" path="res://Assets/Textures/crosshair.png" id="7_jta3l"]
 [ext_resource type="Material" uid="uid://duin8kt0xm037" path="res://Assets/Materials/Tile.tres" id="8_x5ytc"]
 [ext_resource type="Texture2D" uid="uid://d376cac54ksvp" path="res://Assets/Textures/grapple.png" id="10_4memr"]
-[ext_resource type="Texture2D" uid="uid://dvx7p1sbw28kk" path="res://Assets/Textures/Group 5 - 5.png" id="12_apemh"]
+[ext_resource type="AudioStream" uid="uid://ct1cjjg4ih547" path="res://Assets/Audio/KnifeStab.mp3" id="11_pyn1s"]
+[ext_resource type="PackedScene" uid="uid://ot1h486b3uwg" path="res://Scenes/pause_menu.tscn" id="13_3h2h3"]
 [ext_resource type="Texture2D" uid="uid://drlvocbn8aw31" path="res://Assets/Textures/torch.png" id="14_4memr"]
 [ext_resource type="PackedScene" uid="uid://beudludnwujt4" path="res://Assets/Textures/hoggie2.glb" id="14_go4et"]
 [ext_resource type="Texture2D" uid="uid://cdh6ysrwc7yoy" path="res://Assets/Textures/FOG2.png" id="15_w5n7y"]
@@ -67,11 +72,19 @@ const FOV_SPEED_BOOST = 1
 @onready var landing_sfx: AudioStreamPlayer3D = $Feet/Landing
 @onready var dash_sfx: AudioStreamPlayer3D = $Feet/Dash
 @onready var slam_sfx: AudioStreamPlayer3D = $Feet/Slam
+@export var hit_sounds: Array[AudioStream] = []
+@onready var hurt_sfx: AudioStreamPlayer3D = $HurtSFX
+@onready var impact_sfx: AudioStreamPlayer3D = $ImpactSFX
 
-@onready var torch = $Head/Torch
+@export var fireball_scene: PackedScene
+@export var fireball_speed: float = 20.0
+@export var spawn_offset: float = 1.0
+
+@onready var torch: Node3D = $Head/Camera3D/Torch
 @onready var pause_menu: Control = $\"../UI/PauseMenu\"
-@onready var fire_bar: TextureProgressBar = $\"../Node2D/FireBar\"
-@onready var fire_vfx: GPUParticles2D = $\"../Node2D/Fire\"
+@onready var fire_bar: TextureProgressBar = $\"../FireBar/FireBar\"
+@onready var fire_vfx: GPUParticles2D = $\"../FireBar/Fire\"
+
 
 var fire_bar_texture_height
 var fire_vfx_y_offset
@@ -134,6 +147,9 @@ func _physics_process(delta: float) -> void:
 		fire_bar.value -= 1
 		update_fire_vfx()
 	
+	if Input.is_action_just_pressed(\"Fireball\"):
+		shoot_fireball()
+		
 
 	# ================ MOVEMENT ================ 
 	# Gravity + landing sfx
@@ -300,6 +316,35 @@ func update_grapple_icon():
 	else:
 		grapple_icon.visible = false
 	
+func shoot_fireball() -> void:
+	var fireball = fireball_scene.instantiate()
+	get_tree().current_scene.add_child(fireball)
+
+	# Direction the camera is facing (world space, forward is -Z in Godot)
+	var direction: Vector3 = -camera.global_transform.basis.z
+
+	# Spawn slightly in front of the camera so it doesn't collide with the player
+	fireball.global_position = camera.global_position + direction * spawn_offset
+
+	# Orient the fireball to face the direction it's traveling
+	fireball.look_at(fireball.global_position + direction, Vector3.UP)
+
+	# If your fireball script has a velocity/speed property, set it here
+	if fireball.has_method(\"set_velocity\"):
+		fireball.set_velocity(direction * fireball_speed)
+	elif \"velocity\" in fireball:
+		fireball.velocity = direction * fireball_speed
+
+func take_damage(amount: float, source) -> void:
+	if source == \"torch\":
+		return # don't damage self
+	if not impact_sfx.playing:
+		impact_sfx.play()
+	if not hurt_sfx.playing:
+		hurt_sfx.stream = hit_sounds[randi() % hit_sounds.size()]
+		hurt_sfx.play()
+	fire_bar.value -= amount
+	update_fire_vfx()
 "
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1pivh"]
@@ -324,6 +369,9 @@ vertices = PackedVector3Array(-23.074377, 0.70000005, -5.091961, -13.074377, 0.7
 polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1), PackedInt32Array(7, 6, 4), PackedInt32Array(4, 6, 5), PackedInt32Array(10, 9, 8), PackedInt32Array(10, 8, 11), PackedInt32Array(11, 8, 12), PackedInt32Array(15, 14, 13), PackedInt32Array(16, 14, 17), PackedInt32Array(17, 14, 15), PackedInt32Array(11, 12, 13), PackedInt32Array(13, 12, 15), PackedInt32Array(19, 18, 20), PackedInt32Array(20, 18, 21), PackedInt32Array(25, 24, 22), PackedInt32Array(22, 24, 23), PackedInt32Array(21, 26, 20), PackedInt32Array(22, 16, 25), PackedInt32Array(25, 16, 27), PackedInt32Array(27, 16, 17), PackedInt32Array(27, 17, 18), PackedInt32Array(18, 17, 21), PackedInt32Array(29, 28, 30), PackedInt32Array(30, 28, 31), PackedInt32Array(32, 26, 21), PackedInt32Array(32, 21, 33), PackedInt32Array(33, 21, 34), PackedInt32Array(31, 35, 30), PackedInt32Array(28, 33, 31), PackedInt32Array(31, 33, 34), PackedInt32Array(39, 38, 36), PackedInt32Array(36, 38, 37), PackedInt32Array(43, 42, 40), PackedInt32Array(40, 42, 41), PackedInt32Array(47, 46, 44), PackedInt32Array(44, 46, 45), PackedInt32Array(51, 50, 48), PackedInt32Array(48, 50, 49), PackedInt32Array(55, 54, 52), PackedInt32Array(52, 54, 53), PackedInt32Array(56, 8, 9), PackedInt32Array(56, 9, 58), PackedInt32Array(58, 9, 57), PackedInt32Array(61, 60, 59), PackedInt32Array(63, 23, 62), PackedInt32Array(62, 23, 24), PackedInt32Array(65, 64, 58), PackedInt32Array(58, 64, 59), PackedInt32Array(59, 64, 61), PackedInt32Array(62, 66, 63), PackedInt32Array(63, 66, 57), PackedInt32Array(57, 66, 58), PackedInt32Array(67, 60, 68), PackedInt32Array(68, 60, 61), PackedInt32Array(64, 69, 61), PackedInt32Array(70, 65, 66), PackedInt32Array(66, 65, 58), PackedInt32Array(0, 1, 71), PackedInt32Array(71, 72, 0), PackedInt32Array(0, 72, 73), PackedInt32Array(73, 72, 74), PackedInt32Array(72, 75, 74), PackedInt32Array(79, 78, 76), PackedInt32Array(76, 78, 77), PackedInt32Array(80, 35, 31), PackedInt32Array(80, 31, 69), PackedInt32Array(69, 31, 61), PackedInt32Array(61, 31, 81)]
 cell_height = 0.1
 agent_radius = 1.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1pivh"]
+size = Vector3(2.960022, 1.5933228, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3fqxr"]
 albedo_texture = ExtResource("5_qk82f")
@@ -350,247 +398,6 @@ shader = ExtResource("6_qk82f")
 shader_parameter/color_one = Color(1, 1, 1, 1)
 shader_parameter/color_two = Color(0, 0, 0, 0)
 shader_parameter/number_of_colors = 10
-
-[sub_resource type="GDScript" id="GDScript_jta3l"]
-resource_name = "settings"
-script/source = "extends Control
-@onready var game_boy_shader: ColorRect = $\"../GameBoyShader\" 
-@onready var shader_material: ShaderMaterial = game_boy_shader.material as ShaderMaterial
-@onready var crosshair: TextureRect = $\"../Crosshair\"
-
-@onready var volume_slider: HSlider = $MarginContainer/VBoxContainer/Volume/VolumeSlider
-@onready var sensitivity_slider: HSlider = $MarginContainer/VBoxContainer/Sensitivity/SensitivitySlider
-@onready var color_simplification: HSlider = $MarginContainer/VBoxContainer/ColorSteps/ColorSimplification
-@onready var color_picker_button: ColorPickerButton = $MarginContainer/VBoxContainer/ShaderColor/ColorPickerButton
-@onready var color_picker_button_2: ColorPickerButton = $MarginContainer/VBoxContainer/ShaderColor2/ColorPickerButton2
-
-@onready var pixelation: HSlider = $MarginContainer/VBoxContainer/Pixelation/Pixelation
-@onready var fps_counter: Label = $\"../FPSCounter\"
-
-
-const DAMAGE_COLOR_ONE:= Color(1.0, 0.0, 0.0, 1.0)
-const DAMAGE_COLOR_TWO:= Color(0.0, 0.0, 0.0, 1.0)
-const PIXELATION_REC_TIME = 3.0 # SECONDS
-const COLOR_REC_TIME = 1.0
-static var mouse_sensitivity := 1.0
-
-func play_damage_visual():
-	shader_material.set_shader_parameter(\"color_one\", DAMAGE_COLOR_ONE)
-	shader_material.set_shader_parameter(\"color_two\", DAMAGE_COLOR_TWO)
-	get_viewport().scaling_3d_scale = 0.01
-	print(\"damage\")
-
-func _on_volume_slider_value_changed(value: float) -> void:
-	if value <= 0.0:
-		AudioServer.set_bus_mute(0, true)
-	else:
-		AudioServer.set_bus_mute(0, false)
-		AudioServer.set_bus_volume_db(0, linear_to_db(value))
-
-func _on_sensitivity_slider_value_changed(value: float) -> void:
-	mouse_sensitivity = value
-
-func _on_color_simplification_value_changed(value: int) -> void:
-	shader_material.set_shader_parameter(\"number_of_colors\", value)
-
-func _on_color_picker_button_color_changed(color: Color) -> void:
-	shader_material.set_shader_parameter(\"color_one\", color)
-
-func _on_color_picker_button_2_color_changed(color: Color) -> void:
-	shader_material.set_shader_parameter(\"color_two\", color)
-
-func _on_pixelation_value_changed(value: float) -> void:
-	get_viewport().scaling_3d_scale = value
-
-func _ready():
-	load_settings()
-	
-func move_toward_color(from: Color, to: Color, max_step: float) -> Color:
-	return Color(
-		move_toward(from.r, to.r, max_step),
-		move_toward(from.g, to.g, max_step),
-		move_toward(from.b, to.b, max_step),
-		move_toward(from.a, to.a, max_step)
-	)
-
-func _physics_process(delta: float) -> void:
-	var current_color = shader_material.get_shader_parameter(\"color_one\")
-	var current_color2 = shader_material.get_shader_parameter(\"color_two\")
-	var original_pixelation = pixelation.value
-	var current_pixelation = get_viewport().scaling_3d_scale
-	
-	if color_picker_button.color != current_color:
-		var color = move_toward_color(current_color, color_picker_button.color, delta / COLOR_REC_TIME)
-		shader_material.set_shader_parameter(\"color_one\", color)
-	
-	if color_picker_button_2.color != current_color2:
-		var color2 = move_toward_color(current_color2, color_picker_button_2.color, delta / COLOR_REC_TIME)
-		shader_material.set_shader_parameter(\"color_two\", color2)
-	
-	if current_pixelation != original_pixelation:
-		get_viewport().scaling_3d_scale = move_toward(current_pixelation, original_pixelation, delta / PIXELATION_REC_TIME)
-		
-	if Input.is_action_just_pressed(\"Escape\"):
-		if get_tree().paused:
-			# Resume game
-			get_tree().paused = false
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-			crosshair.show()
-			save_settings()
-			self.hide()
-		else:
-			# Pause game
-			get_tree().paused = true
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-			crosshair.hide()
-			self.show()
-
-
-const SETTINGS_FILE := \"user://settings.cfg\"
-
-func save_settings() -> void:
-	var config := ConfigFile.new()
-
-	config.set_value(\"settings\", \"volume\", AudioServer.get_bus_volume_linear(0))
-	config.set_value(\"settings\", \"number_of_colors\", shader_material.get_shader_parameter(\"number_of_colors\"))
-	config.set_value(\"settings\", \"color_one\", shader_material.get_shader_parameter(\"color_one\"))
-	config.set_value(\"settings\", \"color_two\", shader_material.get_shader_parameter(\"color_two\"))
-	config.set_value(\"settings\", \"pixelation\", get_viewport().scaling_3d_scale)
-	config.set_value(\"settings\", \"sensitivity\", mouse_sensitivity)
-
-	config.save(SETTINGS_FILE)
-
-
-func load_settings() -> void:
-	var config := ConfigFile.new()
-
-	if config.load(SETTINGS_FILE) != OK:
-		return
-
-	# Volume
-	var volume = config.get_value(\"settings\", \"volume\", 1.0)
-	AudioServer.set_bus_volume_linear(0, volume)
-	volume_slider.value = volume
-
-	# Number of colours
-	var number_of_colors = config.get_value(\"settings\", \"number_of_colors\", 4)
-	shader_material.set_shader_parameter(\"number_of_colors\", number_of_colors)
-	color_simplification.value = number_of_colors
-
-	# Shader colour
-	var color_one = config.get_value(\"settings\", \"color_one\", Color.WHITE)
-	shader_material.set_shader_parameter(\"color_one\", color_one)
-	color_picker_button.color = color_one
-
-	var color_two = config.get_value(\"settings\", \"color_two\", Color.BLACK)
-	shader_material.set_shader_parameter(\"color_two\", color_two)
-	color_picker_button_2.color = color_two
-
-	# Pixelation
-	var pixelation_value = config.get_value(\"settings\", \"pixelation\", 1.0)
-	get_viewport().scaling_3d_scale = pixelation_value
-	pixelation.value = pixelation_value
-	
-	var sensitivity = config.get_value(\"settings\", \"sensitivity\", 1.0)
-	mouse_sensitivity = sensitivity
-	sensitivity_slider.value = sensitivity
-
-func _on_volume_reset_pressed() -> void:
-	volume_slider.value = 1.0
-
-func _on_sensitivity_reset_pressed() -> void:
-	sensitivity_slider.value = 1.0
-	_on_sensitivity_slider_value_changed(1.0)
-
-func _on_color_steps_reset_pressed() -> void:
-	color_simplification.value = 5.0
-	_on_color_simplification_value_changed(5)
-
-func _on_shader_color_reset_pressed() -> void:
-	var default_color := Color(1, 1, 1, 1)
-	color_picker_button.color = default_color
-	_on_color_picker_button_color_changed(default_color)
-
-func _on_shader_color_reset_2_pressed() -> void:
-	var default_color := Color(0, 0, 0, 1)
-	color_picker_button_2.color = default_color
-	_on_color_picker_button_2_color_changed(default_color)
-
-func _on_pixelation_reset_pressed() -> void:
-	pixelation.value = 0.25
-	_on_pixelation_value_changed(0.25)
-
-func _on_fps_button_toggled(toggled_on: bool) -> void:
-	fps_counter.visible=(toggled_on)
-
-
-func _on_quit_pressed() -> void:
-	get_tree().quit()
-"
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_j7yey"]
-atlas = ExtResource("12_apemh")
-region = Rect2(0, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_go4et"]
-atlas = ExtResource("12_apemh")
-region = Rect2(32, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_4memr"]
-atlas = ExtResource("12_apemh")
-region = Rect2(64, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_w5n7y"]
-atlas = ExtResource("12_apemh")
-region = Rect2(96, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_3h2h3"]
-atlas = ExtResource("12_apemh")
-region = Rect2(128, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_hejdp"]
-atlas = ExtResource("12_apemh")
-region = Rect2(160, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_k7w38"]
-atlas = ExtResource("12_apemh")
-region = Rect2(192, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_mghbe"]
-atlas = ExtResource("12_apemh")
-region = Rect2(224, 0, 32, 32)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_0xyb7"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_j7yey")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_go4et")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_4memr")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_w5n7y")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_3h2h3")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_hejdp")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_k7w38")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_mghbe")
-}],
-"loop": 1,
-"name": &"default",
-"speed": 12.0
-}]
 
 [sub_resource type="Curve" id="Curve_go4et"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.06596305, 1), 0.0, 0.0, 0, 0, Vector2(0.91029024, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
@@ -632,7 +439,6 @@ alpha_curve = SubResource("CurveTexture_4memr")
 turbulence_enabled = true
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_go4et"]
-load_path = "res://.godot/imported/FOG2.png-f338482f672c005549e851c5a74b1d38.ctex"
 
 [sub_resource type="Curve" id="Curve_qvcuf"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.24010551, 1), 0.0, 0.0, 0, 0, Vector2(0.8680739, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
@@ -753,6 +559,9 @@ alpha_curve = SubResource("CurveTexture_au84u")
 [node name="Player" type="CharacterBody3D" parent="." unique_id=2027141483]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0906111, 0)
 script = SubResource("GDScript_1pivh")
+hit_sounds = Array[AudioStream]([ExtResource("1_yq1aw"), ExtResource("3_no8kt"), ExtResource("4_xbk3s")])
+fireball_scene = ExtResource("1_t2t4p")
+spawn_offset = 2.5
 
 [node name="PlayerCollision" type="CollisionShape3D" parent="Player" unique_id=545529474]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -766,9 +575,9 @@ mesh = SubResource("CapsuleMesh_1pivh")
 [node name="Head" type="Node3D" parent="Player" unique_id=648969813]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7796263, 0)
 
-[node name="Torch" parent="Player/Head" unique_id=74443510 instance=ExtResource("1_y6ldt")]
-
 [node name="Camera3D" type="Camera3D" parent="Player/Head" unique_id=102613102]
+
+[node name="Torch" parent="Player/Head/Camera3D" unique_id=74443510 instance=ExtResource("1_y6ldt")]
 
 [node name="Feet" type="Node3D" parent="Player" unique_id=1246340893]
 
@@ -794,6 +603,15 @@ stream = ExtResource("5_npiv4")
 volume_db = -21.053
 pitch_scale = 0.87
 
+[node name="HurtSFX" type="AudioStreamPlayer3D" parent="Player" unique_id=1539669601]
+volume_db = -18.166
+pitch_scale = 0.91
+
+[node name="ImpactSFX" type="AudioStreamPlayer3D" parent="Player" unique_id=1049033780]
+stream = ExtResource("11_pyn1s")
+volume_db = -12.577
+pitch_scale = 0.91
+
 [node name="Map" type="Node3D" parent="." unique_id=1676732882]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, -8.1618595)
 
@@ -808,6 +626,15 @@ environment = SubResource("Environment_fj7yv")
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="Map" unique_id=1103986385]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -1, 8.1618595)
 navigation_mesh = SubResource("NavigationMesh_1pivh")
+
+[node name="hoggie2" parent="Map/NavigationRegion3D" unique_id=722470057 instance=ExtResource("14_go4et")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.219797, 1.8414742, 1.0797254)
+
+[node name="Area3D" type="Area3D" parent="Map/NavigationRegion3D/hoggie2" unique_id=1758758217]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Map/NavigationRegion3D/hoggie2/Area3D" unique_id=1907935859]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3529358, -0.04458618, 0)
+shape = SubResource("BoxShape3D_1pivh")
 
 [node name="Enemy" parent="Map/NavigationRegion3D" unique_id=420250018 instance=ExtResource("4_x5ytc")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 3.102043, 0)
@@ -905,188 +732,14 @@ grow_vertical = 2
 texture = ExtResource("7_jta3l")
 stretch_mode = 2
 
-[node name="PauseMenu" type="Control" parent="UI" unique_id=259055732]
-process_mode = 3
+[node name="PauseMenu" parent="UI" unique_id=273598182 instance=ExtResource("13_3h2h3")]
 visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = SubResource("GDScript_jta3l")
 
-[node name="MarginContainer" type="MarginContainer" parent="UI/PauseMenu" unique_id=1133025044]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -227.5
-offset_top = -168.0
-offset_right = 227.5
-offset_bottom = 168.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/PauseMenu/MarginContainer" unique_id=1297770572]
-layout_mode = 2
-
-[node name="Volume" type="HBoxContainer" parent="UI/PauseMenu/MarginContainer/VBoxContainer" unique_id=1182549096]
-layout_mode = 2
-
-[node name="VolumeLabel" type="Label" parent="UI/PauseMenu/MarginContainer/VBoxContainer/Volume" unique_id=1370187422]
-custom_minimum_size = Vector2(110, 0)
-layout_mode = 2
-text = "Volume"
-
-[node name="VolumeSlider" type="HSlider" parent="UI/PauseMenu/MarginContainer/VBoxContainer/Volume" unique_id=1385063254]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-min_value = -0.01
-max_value = 2.0
-step = 0.05
-value = 0.99
-exp_edit = true
-
-[node name="VolumeReset" type="Button" parent="UI/PauseMenu/MarginContainer/VBoxContainer/Volume" unique_id=1718406285]
-layout_mode = 2
-text = "↩"
-
-[node name="Sensitivity" type="HBoxContainer" parent="UI/PauseMenu/MarginContainer/VBoxContainer" unique_id=1726547094]
-layout_mode = 2
-
-[node name="SensitivityLabel" type="Label" parent="UI/PauseMenu/MarginContainer/VBoxContainer/Sensitivity" unique_id=1361612111]
-custom_minimum_size = Vector2(110, 0)
-layout_mode = 2
-text = "Sensitivity"
-
-[node name="SensitivitySlider" type="HSlider" parent="UI/PauseMenu/MarginContainer/VBoxContainer/Sensitivity" unique_id=230866159]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-min_value = 0.2
-max_value = 3.0
-step = 0.05
-value = 1.0
-
-[node name="SensitivityReset" type="Button" parent="UI/PauseMenu/MarginContainer/VBoxContainer/Sensitivity" unique_id=831409675]
-layout_mode = 2
-text = "↩"
-
-[node name="ColorSteps" type="HBoxContainer" parent="UI/PauseMenu/MarginContainer/VBoxContainer" unique_id=4539979]
-layout_mode = 2
-
-[node name="ColorLabel" type="Label" parent="UI/PauseMenu/MarginContainer/VBoxContainer/ColorSteps" unique_id=1130762485]
-custom_minimum_size = Vector2(110, 0)
-layout_mode = 2
-text = "Color Steps"
-
-[node name="ColorSimplification" type="HSlider" parent="UI/PauseMenu/MarginContainer/VBoxContainer/ColorSteps" unique_id=1946536721]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-min_value = 4.0
-max_value = 20.0
-value = 5.0
-exp_edit = true
-
-[node name="ColorStepsReset" type="Button" parent="UI/PauseMenu/MarginContainer/VBoxContainer/ColorSteps" unique_id=2105635864]
-layout_mode = 2
-text = "↩"
-
-[node name="ShaderColor" type="HBoxContainer" parent="UI/PauseMenu/MarginContainer/VBoxContainer" unique_id=654107647]
-layout_mode = 2
-
-[node name="ColorLabel" type="Label" parent="UI/PauseMenu/MarginContainer/VBoxContainer/ShaderColor" unique_id=1703711181]
-custom_minimum_size = Vector2(110, 0)
-layout_mode = 2
-text = "Colour one"
-
-[node name="ColorPickerButton" type="ColorPickerButton" parent="UI/PauseMenu/MarginContainer/VBoxContainer/ShaderColor" unique_id=1192780865]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Pick color"
-color = Color(1, 1, 1, 1)
-edit_alpha = false
-
-[node name="ShaderColorReset" type="Button" parent="UI/PauseMenu/MarginContainer/VBoxContainer/ShaderColor" unique_id=1128532151]
-layout_mode = 2
-text = "↩"
-
-[node name="ShaderColor2" type="HBoxContainer" parent="UI/PauseMenu/MarginContainer/VBoxContainer" unique_id=1541836975]
-layout_mode = 2
-
-[node name="ColorLabel2" type="Label" parent="UI/PauseMenu/MarginContainer/VBoxContainer/ShaderColor2" unique_id=1603323851]
-custom_minimum_size = Vector2(110, 0)
-layout_mode = 2
-text = "Colour two"
-
-[node name="ColorPickerButton2" type="ColorPickerButton" parent="UI/PauseMenu/MarginContainer/VBoxContainer/ShaderColor2" unique_id=424663203]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Pick color"
-color = Color(1, 1, 1, 1)
-edit_alpha = false
-
-[node name="ShaderColorReset2" type="Button" parent="UI/PauseMenu/MarginContainer/VBoxContainer/ShaderColor2" unique_id=928741585]
-layout_mode = 2
-text = "↩"
-
-[node name="Pixelation" type="HBoxContainer" parent="UI/PauseMenu/MarginContainer/VBoxContainer" unique_id=1037914925]
-layout_mode = 2
-
-[node name="PixelationLabel" type="Label" parent="UI/PauseMenu/MarginContainer/VBoxContainer/Pixelation" unique_id=1160920440]
-custom_minimum_size = Vector2(110, 0)
-layout_mode = 2
-text = "Pixelation"
-
-[node name="Pixelation" type="HSlider" parent="UI/PauseMenu/MarginContainer/VBoxContainer/Pixelation" unique_id=1976474217]
-layout_mode = 2
-size_flags_horizontal = 3
-min_value = 0.1
-max_value = 1.0
-step = 0.05
-value = 0.25
-
-[node name="PixelationReset" type="Button" parent="UI/PauseMenu/MarginContainer/VBoxContainer/Pixelation" unique_id=1897402557]
-layout_mode = 2
-text = "↩"
-
-[node name="FPSCounter" type="HBoxContainer" parent="UI/PauseMenu/MarginContainer/VBoxContainer" unique_id=341139141]
-layout_mode = 2
-
-[node name="FPSLabel" type="Label" parent="UI/PauseMenu/MarginContainer/VBoxContainer/FPSCounter" unique_id=1430842143]
-custom_minimum_size = Vector2(110, 0)
-layout_mode = 2
-text = "FPS Counter"
-
-[node name="FPSButton" type="CheckButton" parent="UI/PauseMenu/MarginContainer/VBoxContainer/FPSCounter" unique_id=1073609617]
-layout_mode = 2
-size_flags_horizontal = 3
-button_pressed = true
-
-[node name="Quit" type="Button" parent="UI/PauseMenu/MarginContainer/VBoxContainer" unique_id=876834082]
-custom_minimum_size = Vector2(0, 1)
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "QUIT"
-
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="UI" unique_id=59666738]
-visible = false
-position = Vector2(63.000008, 63)
-scale = Vector2(3.03125, 3)
-sprite_frames = SubResource("SpriteFrames_0xyb7")
-autoplay = "default"
-frame_progress = 0.21858719
-
-[node name="Node2D" type="Node2D" parent="." unique_id=1740177494]
+[node name="FireBar" type="Node2D" parent="." unique_id=1740177494]
 position = Vector2(362, 259)
 scale = Vector2(1.043, 1)
 
-[node name="FireBar" type="TextureProgressBar" parent="Node2D" unique_id=1555308070]
+[node name="FireBar" type="TextureProgressBar" parent="FireBar" unique_id=1555308070]
 offset_left = -257.90988
 offset_top = -120.0
 offset_right = -207.90988
@@ -1095,7 +748,7 @@ value = 100.0
 fill_mode = 3
 texture_progress = ExtResource("14_4memr")
 
-[node name="Fire" type="GPUParticles2D" parent="Node2D" unique_id=1844467878]
+[node name="Fire" type="GPUParticles2D" parent="FireBar" unique_id=1844467878]
 position = Vector2(-230.10547, -94)
 scale = Vector2(0.10883196, 0.11111111)
 amount = 32
@@ -1104,7 +757,7 @@ lifetime = 0.86
 fixed_fps = 32
 process_material = SubResource("ParticleProcessMaterial_r08sn")
 
-[node name="GPUParticles2D" type="GPUParticles2D" parent="Node2D" unique_id=1167706700]
+[node name="GPUParticles2D" type="GPUParticles2D" parent="FireBar" unique_id=1167706700]
 visible = false
 position = Vector2(-618.40845, -245)
 scale = Vector2(2.90628, 3)
@@ -1114,7 +767,7 @@ lifetime = 5.0
 fixed_fps = 32
 process_material = SubResource("ParticleProcessMaterial_3ongi")
 
-[node name="Smoke" type="GPUParticles2D" parent="Node2D" unique_id=685113840]
+[node name="Smoke" type="GPUParticles2D" parent="FireBar" unique_id=685113840]
 visible = false
 position = Vector2(-554.17065, -240)
 amount = 16
@@ -1123,7 +776,7 @@ lifetime = 1.54
 fixed_fps = 32
 process_material = SubResource("ParticleProcessMaterial_k7w38")
 
-[node name="SmallFire" type="GPUParticles2D" parent="Node2D" unique_id=777150195]
+[node name="SmallFire" type="GPUParticles2D" parent="FireBar" unique_id=777150195]
 visible = false
 position = Vector2(-779.48236, -254.00002)
 scale = Vector2(0.10883197, 0.11111111)
@@ -1133,7 +786,7 @@ lifetime = 0.81
 fixed_fps = 32
 process_material = SubResource("ParticleProcessMaterial_go4et")
 
-[node name="Fire2" type="GPUParticles2D" parent="Node2D" unique_id=803654597]
+[node name="Fire2" type="GPUParticles2D" parent="FireBar" unique_id=803654597]
 visible = false
 position = Vector2(-664.42957, -248)
 scale = Vector2(0.0118443975, 0.012345679)
@@ -1142,23 +795,3 @@ texture = SubResource("CompressedTexture2D_go4et")
 lifetime = 1.34
 fixed_fps = 32
 process_material = SubResource("ParticleProcessMaterial_r08sn")
-
-[node name="Node3D" type="Node3D" parent="." unique_id=1913597546]
-
-[node name="hoggie2" parent="." unique_id=722470057 instance=ExtResource("14_go4et")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.219797, 1.8414742, 1.0797254)
-
-[connection signal="value_changed" from="UI/PauseMenu/MarginContainer/VBoxContainer/Volume/VolumeSlider" to="UI/PauseMenu" method="_on_volume_slider_value_changed"]
-[connection signal="pressed" from="UI/PauseMenu/MarginContainer/VBoxContainer/Volume/VolumeReset" to="UI/PauseMenu" method="_on_volume_reset_pressed"]
-[connection signal="value_changed" from="UI/PauseMenu/MarginContainer/VBoxContainer/Sensitivity/SensitivitySlider" to="UI/PauseMenu" method="_on_sensitivity_slider_value_changed"]
-[connection signal="pressed" from="UI/PauseMenu/MarginContainer/VBoxContainer/Sensitivity/SensitivityReset" to="UI/PauseMenu" method="_on_sensitivity_reset_pressed"]
-[connection signal="value_changed" from="UI/PauseMenu/MarginContainer/VBoxContainer/ColorSteps/ColorSimplification" to="UI/PauseMenu" method="_on_color_simplification_value_changed"]
-[connection signal="pressed" from="UI/PauseMenu/MarginContainer/VBoxContainer/ColorSteps/ColorStepsReset" to="UI/PauseMenu" method="_on_color_steps_reset_pressed"]
-[connection signal="color_changed" from="UI/PauseMenu/MarginContainer/VBoxContainer/ShaderColor/ColorPickerButton" to="UI/PauseMenu" method="_on_color_picker_button_color_changed"]
-[connection signal="pressed" from="UI/PauseMenu/MarginContainer/VBoxContainer/ShaderColor/ShaderColorReset" to="UI/PauseMenu" method="_on_shader_color_reset_pressed"]
-[connection signal="color_changed" from="UI/PauseMenu/MarginContainer/VBoxContainer/ShaderColor2/ColorPickerButton2" to="UI/PauseMenu" method="_on_color_picker_button_2_color_changed"]
-[connection signal="pressed" from="UI/PauseMenu/MarginContainer/VBoxContainer/ShaderColor2/ShaderColorReset2" to="UI/PauseMenu" method="_on_shader_color_reset_2_pressed"]
-[connection signal="value_changed" from="UI/PauseMenu/MarginContainer/VBoxContainer/Pixelation/Pixelation" to="UI/PauseMenu" method="_on_pixelation_value_changed"]
-[connection signal="pressed" from="UI/PauseMenu/MarginContainer/VBoxContainer/Pixelation/PixelationReset" to="UI/PauseMenu" method="_on_pixelation_reset_pressed"]
-[connection signal="toggled" from="UI/PauseMenu/MarginContainer/VBoxContainer/FPSCounter/FPSButton" to="UI/PauseMenu" method="_on_fps_button_toggled"]
-[connection signal="pressed" from="UI/PauseMenu/MarginContainer/VBoxContainer/Quit" to="UI/PauseMenu" method="_on_quit_pressed"]

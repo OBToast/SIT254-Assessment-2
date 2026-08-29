@@ -1,0 +1,61 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://mqfr5c6m63vd"]
+
+[ext_resource type="Texture2D" uid="uid://dk14lvx574qiy" path="res://Assets/Enemies/Enemy1Attack/1.png" id="1_ogj0p"]
+[ext_resource type="Texture2D" uid="uid://bgjaysnia66hh" path="res://Assets/Enemies/Enemy1Walk/000.png" id="1_vrti1"]
+[ext_resource type="Texture2D" uid="uid://d2y224xn8p1ty" path="res://Assets/Enemies/Enemy1Attack/2.png" id="2_07rhn"]
+[ext_resource type="Texture2D" uid="uid://5o5q7conouqu" path="res://Assets/Enemies/Enemy1Walk/001.png" id="2_bx26s"]
+[ext_resource type="Texture2D" uid="uid://po1dcq30pecp" path="res://Assets/Enemies/Enemy1Walk/002.png" id="3_fxcxy"]
+[ext_resource type="Texture2D" uid="uid://cf30usdpb4y3s" path="res://Assets/Enemies/Enemy1Attack/3.png" id="3_vuoti"]
+[ext_resource type="Texture2D" uid="uid://6wl85jiyjqya" path="res://Assets/Enemies/Enemy1Walk/003.png" id="4_dyhfk"]
+[ext_resource type="Texture2D" uid="uid://dougmjikq5nn5" path="res://Assets/Enemies/Enemy1Attack/4.png" id="4_e12ja"]
+[ext_resource type="Texture2D" uid="uid://c6nf768jv6suf" path="res://Assets/Enemies/Enemy1Walk/004.png" id="5_ogj0p"]
+[ext_resource type="Texture2D" uid="uid://dto2dxnoy5ca2" path="res://Assets/Enemies/Enemy1Walk/005.png" id="6_07rhn"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_vrti1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_ogj0p")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_07rhn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_vuoti")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_e12ja")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_vrti1")
+}],
+"loop": 1,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_vrti1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_bx26s")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_fxcxy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_dyhfk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_ogj0p")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_07rhn")
+}],
+"loop": 1,
+"name": &"walk",
+"speed": 10.0
+}]
