@@ -10,6 +10,9 @@
 [ext_resource type="Texture2D" uid="uid://dougmjikq5nn5" path="res://Assets/Enemies/Enemy1Attack/4.png" id="4_e12ja"]
 [ext_resource type="Texture2D" uid="uid://c6nf768jv6suf" path="res://Assets/Enemies/Enemy1Walk/004.png" id="5_ogj0p"]
 [ext_resource type="Texture2D" uid="uid://dto2dxnoy5ca2" path="res://Assets/Enemies/Enemy1Walk/005.png" id="6_07rhn"]
+[ext_resource type="Texture2D" uid="uid://h6gy7hsgxbuq" path="res://Assets/Enemies/Enemy1Death/1.png" id="6_e12ja"]
+[ext_resource type="Texture2D" uid="uid://c1b68rbih8coh" path="res://Assets/Enemies/Enemy1Death/2.png" id="7_gr6hj"]
+[ext_resource type="Texture2D" uid="uid://bhb8oxoby2tl8" path="res://Assets/Enemies/Enemy1Death/3.png" id="8_spoi7"]
 
 [resource]
 animations = [{
@@ -35,6 +38,20 @@ animations = [{
 "loop": 1,
 "name": &"attack",
 "speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_e12ja")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_gr6hj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_spoi7")
+}],
+"loop": 0,
+"name": &"die",
+"speed": 6.0
 }, {
 "frames": [{
 "duration": 1.0,

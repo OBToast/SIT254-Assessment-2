@@ -35,7 +35,8 @@ func _physics_process(delta: float) -> void:
 	global_position += velocity * delta
 
 func _on_body_entered(_body: Node3D) -> void:
-	_explode()
+	if _body.name != \"Player\":
+		_explode()
 
 func _on_area_entered(_area: Area3D) -> void:
 	_explode()

@@ -221,6 +221,13 @@ layout_mode = 2
 size_flags_horizontal = 3
 button_pressed = true
 
+[node name="Restart" type="Button" parent="MarginContainer/VBoxContainer" unique_id=2098443291]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Restart (F1)
+"
+
 [node name="QuitToMenu" type="Button" parent="MarginContainer/VBoxContainer" unique_id=1550916395]
 custom_minimum_size = Vector2(0, 1)
 layout_mode = 2
@@ -247,5 +254,6 @@ text = "Quit"
 [connection signal="value_changed" from="MarginContainer/VBoxContainer/SettingsContainer/Pixelation/Pixelation" to="." method="_on_pixelation_value_changed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/SettingsContainer/Pixelation/PixelationReset" to="." method="_on_pixelation_reset_pressed"]
 [connection signal="toggled" from="MarginContainer/VBoxContainer/SettingsContainer/FPSCounter/FPSButton" to="." method="_on_fps_button_toggled"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Restart" to="." method="_on_restart_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/QuitToMenu" to="." method="_on_quit_to_menu_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Quit" to="." method="_on_quit_pressed"]

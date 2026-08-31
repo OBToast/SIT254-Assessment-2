@@ -7,6 +7,7 @@
 [ext_resource type="AudioStream" uid="uid://d2sq8x4lr8750" path="res://Assets/Audio/EnemyAttack.mp3" id="5_8uf12"]
 [ext_resource type="AudioStream" uid="uid://dqrqbx8s8jivy" path="res://Assets/Audio/BloodSplash.mp3" id="5_56vhr"]
 [ext_resource type="SpriteFrames" uid="uid://mqfr5c6m63vd" path="res://Assets/Enemies/Enemy1Walk.tres" id="7_8uf12"]
+[ext_resource type="Shader" uid="uid://c1ivoj67v2jrd" path="res://Scenes/burn_dissolve.gdshader" id="7_po0sg"]
 [ext_resource type="PackedScene" uid="uid://bybscewmu5kf8" path="res://Assets/Enemies/AttackModel.glb" id="8_auwsv"]
 [ext_resource type="Material" uid="uid://c6vwol1b2ohn7" path="res://Assets/bloodsplattermaterial.tres" id="11_56vhr"]
 
@@ -55,6 +56,7 @@ material = ExtResource("11_56vhr")
 script = ExtResource("1_287tu")
 attack_range = 3.0
 hit_sounds = Array[AudioStream]([ExtResource("1_afpow"), ExtResource("2_287tu"), ExtResource("3_0830c")])
+dissolve_shader = ExtResource("7_po0sg")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1050010561]
 shape = SubResource("CapsuleShape3D_1pivh")
@@ -83,11 +85,12 @@ transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0.24556807, 0)
 modulate = Color(2.1928647, 18.892002, 18.892002, 1)
 billboard = 1
 sprite_frames = ExtResource("7_8uf12")
-animation = &"attack"
-autoplay = "walk"
+animation = &"die"
+frame = 2
+frame_progress = 1.0
 
 [node name="DeathParticles" type="GPUParticles3D" parent="." unique_id=862172644]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1071976, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.24695277, 0)
 emitting = false
 amount = 64
 lifetime = 0.75

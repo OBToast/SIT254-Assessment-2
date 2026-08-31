@@ -9,6 +9,7 @@ extends Control
 @onready var color_simplification: HSlider = $MarginContainer/VBoxContainer/SettingsContainer/ColorSteps/ColorSimplification
 @onready var color_picker_button: ColorPickerButton = $MarginContainer/VBoxContainer/SettingsContainer/ShaderColor/ColorPickerButton
 @onready var color_picker_button_2: ColorPickerButton = $MarginContainer/VBoxContainer/SettingsContainer/ShaderColor2/ColorPickerButton2
+@onready var restart: Button = $MarginContainer/VBoxContainer/Restart
 
 @onready var pixelation: HSlider = $MarginContainer/VBoxContainer/SettingsContainer/Pixelation/Pixelation
 @onready var fps_counter: Label = $"../FPSCounter"
@@ -18,15 +19,20 @@ const DEFAULT_COLOUR_TWO = Color(0.086, 0.026, 0.053, 1.0)
 
 const DAMAGE_COLOR_ONE:= Color(1.0, 0.0, 0.0, 1.0)
 const DAMAGE_COLOR_TWO:= Color(0.0, 0.0, 0.0, 1.0)
+const HEAL_COLOR_ONE:= Color(1.0, 0.683, 0.0, 1.0)
 const PIXELATION_REC_TIME = 3.0 # SECONDS
 const COLOR_REC_TIME = 1.0
 static var mouse_sensitivity := 1.0
 
 func play_damage_visual():
 	shader_material.set_shader_parameter("color_one", DAMAGE_COLOR_ONE)
-	shader_material.set_shader_parameter("color_two", DAMAGE_COLOR_TWO)
 	get_viewport().scaling_3d_scale = 0.01
 	print("damage")
+
+func play_heal_visual():
+	shader_material.set_shader_parameter("color_one", HEAL_COLOR_ONE)
+	get_viewport().scaling_3d_scale += 0.05
+	print("heal")
 
 func _on_volume_slider_value_changed(value: float) -> void:
 	if value <= 0.0:
@@ -188,3 +194,8 @@ func _on_resume_pressed() -> void:
 	crosshair.show()
 	save_settings()
 	self.hide()
+
+
+func _on_restart_pressed() -> void:
+	get_tree().paused = false
+	get_tree().reload_current_scene()
