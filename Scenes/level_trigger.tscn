@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://ck8skyps5hcx1"]
+
+[sub_resource type="GDScript" id="GDScript_x0eg5"]
+resource_name = "LoadLevel"
+script/source = "extends Area3D
+
+@export var SceneName: String = \"\"
+
+func _on_body_entered(body: Node3D) -> void:
+	if body.name == \"Player\":
+		if SceneName == \"\":
+			push_warning(\"SceneName is empty — nothing to load.\")
+			return
+		var err := get_tree().change_scene_to_file(SceneName)
+		if err != OK:
+			push_error(\"Failed to change scene to '%s' (error %d)\" % [SceneName, err])
+"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_arqee"]
+size = Vector3(4.8776855, 3.9257813, 11.128418)
+
+[node name="LevelTrigger" type="Area3D" unique_id=1774035424]
+script = SubResource("GDScript_x0eg5")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1606086204]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0235596, 0.578125, -1.255127)
+shape = SubResource("BoxShape3D_arqee")

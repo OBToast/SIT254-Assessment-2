@@ -1,0 +1,168 @@
+[gd_scene format=3 uid="uid://ijaha2idl1t6"]
+
+[sub_resource type="GDScript" id="GDScript_1pivh"]
+resource_name = "Settings"
+script/source = "extends Button
+
+var settings: Array[Control]
+var visibile = false
+
+func _ready() -> void:
+	for child in get_parent().get_children():
+		if child != self and child is Control:
+			settings.append(child)
+	for setting in settings:
+		setting.visible = false
+	pressed.connect(_toggle_settings)
+
+func _toggle_settings() -> void:
+	for setting in settings:
+		setting.visible = !setting.visible
+	visibile = !visibile
+	self.text = \"Settings\"
+	if visibile == true:
+		self.text = \"Settings ▼\"
+"
+
+[node name="SettingsContainer" type="VBoxContainer" unique_id=860618811]
+
+[node name="SettingsButton" type="Button" parent="." unique_id=1005461661]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Settings"
+script = SubResource("GDScript_1pivh")
+
+[node name="Volume" type="HBoxContainer" parent="." unique_id=1570275502]
+layout_mode = 2
+
+[node name="VolumeLabel" type="Label" parent="Volume" unique_id=649874908]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Volume"
+
+[node name="VolumeSlider" type="HSlider" parent="Volume" unique_id=547068318]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = -0.01
+max_value = 2.0
+step = 0.05
+value = 0.99
+exp_edit = true
+
+[node name="VolumeReset" type="Button" parent="Volume" unique_id=1426823383]
+layout_mode = 2
+text = "↩"
+
+[node name="Sensitivity" type="HBoxContainer" parent="." unique_id=302026354]
+layout_mode = 2
+
+[node name="SensitivityLabel" type="Label" parent="Sensitivity" unique_id=676710321]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Sensitivity"
+
+[node name="SensitivitySlider" type="HSlider" parent="Sensitivity" unique_id=253462757]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.2
+max_value = 3.0
+step = 0.05
+value = 1.0
+
+[node name="SensitivityReset" type="Button" parent="Sensitivity" unique_id=1300397419]
+layout_mode = 2
+text = "↩"
+
+[node name="ColorSteps" type="HBoxContainer" parent="." unique_id=1408711695]
+layout_mode = 2
+
+[node name="ColorLabel" type="Label" parent="ColorSteps" unique_id=2066227516]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Color Steps"
+
+[node name="ColorSimplification" type="HSlider" parent="ColorSteps" unique_id=756728466]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 4.0
+max_value = 20.0
+value = 5.0
+exp_edit = true
+
+[node name="ColorStepsReset" type="Button" parent="ColorSteps" unique_id=1565568178]
+layout_mode = 2
+text = "↩"
+
+[node name="ShaderColor" type="HBoxContainer" parent="." unique_id=855752857]
+layout_mode = 2
+
+[node name="ColorLabel" type="Label" parent="ShaderColor" unique_id=1615912848]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Colour one"
+
+[node name="ColorPickerButton" type="ColorPickerButton" parent="ShaderColor" unique_id=2092637254]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pick color"
+color = Color(0.8350949, 0.38681313, 3.85046e-07, 1)
+edit_alpha = false
+
+[node name="ShaderColorReset" type="Button" parent="ShaderColor" unique_id=411597651]
+layout_mode = 2
+text = "↩"
+
+[node name="ShaderColor2" type="HBoxContainer" parent="." unique_id=1879479095]
+layout_mode = 2
+
+[node name="ColorLabel2" type="Label" parent="ShaderColor2" unique_id=1278898787]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Colour two"
+
+[node name="ColorPickerButton2" type="ColorPickerButton" parent="ShaderColor2" unique_id=456987846]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pick color"
+color = Color(0.20006713, 0.108898304, 0.17445198, 1)
+edit_alpha = false
+
+[node name="ShaderColorReset2" type="Button" parent="ShaderColor2" unique_id=1806540793]
+layout_mode = 2
+text = "↩"
+
+[node name="Pixelation" type="HBoxContainer" parent="." unique_id=746117222]
+layout_mode = 2
+
+[node name="PixelationLabel" type="Label" parent="Pixelation" unique_id=201930233]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Pixelation"
+
+[node name="Pixelation" type="HSlider" parent="Pixelation" unique_id=56137970]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.1
+max_value = 1.0
+step = 0.05
+value = 0.25
+
+[node name="PixelationReset" type="Button" parent="Pixelation" unique_id=1777672393]
+layout_mode = 2
+text = "↩"
+
+[node name="FPSCounter" type="HBoxContainer" parent="." unique_id=294157788]
+layout_mode = 2
+
+[node name="FPSLabel" type="Label" parent="FPSCounter" unique_id=1748941408]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "FPS Counter"
+
+[node name="FPSButton" type="CheckButton" parent="FPSCounter" unique_id=792173618]
+layout_mode = 2
+size_flags_horizontal = 3
+button_pressed = true

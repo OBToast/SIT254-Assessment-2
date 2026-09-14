@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://duin8kt0xm037"]
+
+[ext_resource type="Texture2D" uid="uid://d2j10rmc1bh2b" path="res://Assets/Textures/tileNormalmap.jpg" id="1_4baqc"]
+
+[resource]
+normal_enabled = true
+normal_scale = 16.0
+normal_texture = ExtResource("1_4baqc")
+uv1_scale = Vector3(0.1, 0.1, 0.1)
+uv1_triplanar = true

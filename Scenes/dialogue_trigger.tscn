@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://vbh8l7rpw3ee"]
+
+[sub_resource type="GDScript" id="GDScript_4m2ty"]
+resource_name = "DialogueTrigger"
+script/source = "extends Area3D
+
+@export var dialogue_lines: Array[DialogueLine] = []
+@export var dialogue_controller_path: NodePath
+@export var trigger_once: bool = true
+
+var dialogue_controller: Control = null
+var has_triggered: bool = false
+
+func _ready() -> void:
+	dialogue_controller = get_node_or_null(dialogue_controller_path)
+	if dialogue_controller == null:
+		push_warning(\"dialogue_controller_path is not set or invalid.\")
+	body_entered.connect(_on_body_entered)
+
+func _on_body_entered(body: Node3D) -> void:
+	if trigger_once and has_triggered:
+		return
+	if body.name != \"Player\":
+		return
+	if dialogue_controller == null:
+		return
+
+	has_triggered = true
+	dialogue_controller.start_dialogue(dialogue_lines)
+"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3ongi"]
+size = Vector3(6.0183105, 2.2589111, 3.1425781)
+
+[node name="DialogueTrigger" type="Area3D" unique_id=3620286]
+script = SubResource("GDScript_4m2ty")
+dialogue_controller_path = NodePath("../DialogueManager")
+trigger_once = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=646921684]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.028442383, 0.62945557, -0.0009765625)
+shape = SubResource("BoxShape3D_3ongi")

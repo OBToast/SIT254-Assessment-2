@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://ddo8546t1pm6p"]
+
+[ext_resource type="PackedScene" uid="uid://bybscewmu5kf8" path="res://Assets/Enemies/AttackModel.glb" id="1_7p73j"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1pivh"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.892)
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 0.38
+
+[node name="AttackModel" unique_id=1749154320 instance=ExtResource("1_7p73j")]
+
+[node name="Cube" parent="." index="0" unique_id=1346160038]
+surface_material_override/0 = SubResource("StandardMaterial3D_1pivh")

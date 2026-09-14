@@ -1,0 +1,13 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://c6vwol1b2ohn7"]
+
+[ext_resource type="Texture2D" uid="uid://bw86cg2pnoeso" path="res://Assets/Textures/bloodsplatters2.png" id="1_vy5u6"]
+
+[resource]
+transparency = 1
+albedo_color = Color(1.753959, 1.753959, 1.753959, 1)
+albedo_texture = ExtResource("1_vy5u6")
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 7
+particles_anim_v_frames = 5
+particles_anim_loop = false

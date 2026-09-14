@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://syki6qdq54e0"]
+
+[ext_resource type="Texture2D" uid="uid://d376cac54ksvp" path="res://Assets/Textures/grapple.png" id="1_w7082"]
+[ext_resource type="Shader" uid="uid://ji7oi6bx8ps5" path="res://Assets/Shaders/GameBoy.gdshader" id="2_vxyje"]
+[ext_resource type="Texture2D" uid="uid://d3yat8ou17spr" path="res://Assets/Textures/crosshair.png" id="3_jxw7r"]
+[ext_resource type="PackedScene" uid="uid://ot1h486b3uwg" path="res://Scenes/pause_menu.tscn" id="4_bxwv4"]
+
+[sub_resource type="GDScript" id="GDScript_0xyb7"]
+resource_name = "FPSCounter"
+script/source = "extends Label
+
+func _process(delta: float) -> void:
+	text = \"FPS: %d\" % Engine.get_frames_per_second()
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0xyb7"]
+shader = ExtResource("2_vxyje")
+shader_parameter/color_one = Color(1, 1, 1, 1)
+shader_parameter/color_two = Color(0, 0, 0, 0)
+shader_parameter/number_of_colors = 10
+
+[node name="UI" type="CanvasLayer" unique_id=1307006714]
+
+[node name="GrappleIcon" type="Sprite2D" parent="." unique_id=795576981]
+visible = false
+position = Vector2(960, 540)
+texture = ExtResource("1_w7082")
+
+[node name="FPSCounter" type="Label" parent="." unique_id=1592809185]
+offset_left = 6.0
+offset_top = 3.0
+offset_right = 46.0
+offset_bottom = 26.0
+script = SubResource("GDScript_0xyb7")
+
+[node name="GameBoyShader" type="ColorRect" parent="." unique_id=338455928]
+material = SubResource("ShaderMaterial_0xyb7")
+offset_right = 1963.0
+offset_bottom = 1116.0
+mouse_filter = 2
+
+[node name="Crosshair" type="TextureRect" parent="." unique_id=1043083083]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_jxw7r")
+stretch_mode = 2
+
+[node name="PauseMenu" parent="." unique_id=273598182 instance=ExtResource("4_bxwv4")]
+visible = false

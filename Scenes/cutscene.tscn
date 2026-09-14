@@ -1,0 +1,158 @@
+[gd_scene format=3 uid="uid://dn518c7w3efrc"]
+
+[ext_resource type="Texture2D" uid="uid://ri0v5xt1wbxv" path="res://Assets/Textures/Cutscene/Highway man.png" id="1_7n648"]
+[ext_resource type="PackedScene" uid="uid://cpji30yhg1f0e" path="res://Scenes/Dialogue.tscn" id="2_vlwh7"]
+[ext_resource type="Script" uid="uid://byrv03s3ddr0b" path="res://Scripts/dialogue_line.gd" id="3_jd5kf"]
+[ext_resource type="Texture2D" uid="uid://dn3c7lbn5v0vl" path="res://Assets/Textures/Cutscene/images (1).jpg" id="4_eholo"]
+[ext_resource type="Texture2D" uid="uid://tr4qljjw0etq" path="res://Assets/Textures/Cutscene/Satan.png" id="4_j1a0j"]
+[ext_resource type="Texture2D" uid="uid://i68e10sdrsbq" path="res://Assets/Textures/Cutscene/images (7).jpg" id="5_018oa"]
+[ext_resource type="Texture2D" uid="uid://ctfctvsmgfkpt" path="res://Assets/Textures/Cutscene/images (2).jpg" id="5_f5nhl"]
+[ext_resource type="PackedScene" uid="uid://u0ixxd2h0shm" path="res://Scenes/tutorial.tscn" id="5_j6j7k"]
+[ext_resource type="Texture2D" uid="uid://cmewjidisigcd" path="res://Assets/Textures/Cutscene/81CImEz3PsL._AC_UF894,1000_QL80_.jpg" id="6_bq2bh"]
+[ext_resource type="Texture2D" uid="uid://wqhugx83wq61" path="res://Assets/Textures/Cutscene/images (3).jpg" id="7_whp1e"]
+[ext_resource type="Texture2D" uid="uid://cyqy1dh1ywy8d" path="res://Assets/Textures/Cutscene/wu8t7i9wzlud1.jpeg" id="8_ixjyl"]
+[ext_resource type="Texture2D" uid="uid://o5ac16gkkpyr" path="res://Assets/Textures/Cutscene/Satan.webp" id="10_018oa"]
+[ext_resource type="Texture2D" uid="uid://b2dlwm1dsnfrv" path="res://Assets/Textures/Cutscene/images (4).jpg" id="11_a71v6"]
+[ext_resource type="Texture2D" uid="uid://ro1ymu1aspdr" path="res://Assets/Textures/Cutscene/f646fd1c55d0e4db0c9dd6b4e8a17445.jpg" id="12_p2od8"]
+[ext_resource type="Texture2D" uid="uid://dx8n6aaxpmdas" path="res://Assets/Textures/Cutscene/-Asf7XoqoOJaFdo6lbfvdsPRJRWqmUXBf9jwixZG70M.jpg" id="13_whp1e"]
+[ext_resource type="Texture2D" uid="uid://bikrnicg3a44d" path="res://Assets/Textures/Cutscene/images (5).jpg" id="14_ixjyl"]
+[ext_resource type="Texture2D" uid="uid://cfg76wy2d1b6y" path="res://Assets/Textures/Cutscene/images (6).jpg" id="15_018oa"]
+[ext_resource type="Texture2D" uid="uid://dpalxd14qdqac" path="res://Assets/Textures/Cutscene/how-many-times-has-peter-died-in-the-whole-show-im-curious-v0-f3uhjherw4g91.webp" id="17_a71v6"]
+[ext_resource type="PackedScene" uid="uid://ddrng036w3bp7" path="res://Scenes/ui.tscn" id="19_018oa"]
+
+[sub_resource type="Resource" id="Resource_wbwiw"]
+script = ExtResource("3_jd5kf")
+text = "Ya know, the other day, some guy I got at knifepoint asks me, “how can you do this?” and I says “how could I not?”"
+image = ExtResource("1_7n648")
+show_cutscene = true
+metadata/_custom_type_script = "uid://byrv03s3ddr0b"
+
+[sub_resource type="Resource" id="Resource_qcfcl"]
+script = ExtResource("3_jd5kf")
+text = "I mean me? I been a highwayman all my life. "
+image = ExtResource("4_eholo")
+show_cutscene = true
+metadata/_custom_type_script = "uid://byrv03s3ddr0b"
+
+[sub_resource type="Resource" id="Resource_ndjoj"]
+script = ExtResource("3_jd5kf")
+text = "Well, not all my life. Up to ‘bout seven I was just a normal kid. Then my dad got me involved, and could be the term ‘highwayboy’ were more appropriate ‘n ‘highwayman’ ‘till I was full-grown, but you get the idea."
+image = ExtResource("5_018oa")
+show_cutscene = true
+metadata/_custom_type_script = "uid://byrv03s3ddr0b"
+
+[sub_resource type="Resource" id="Resource_34wqy"]
+script = ExtResource("3_jd5kf")
+text = "Point is, I never done anything else but this."
+image = ExtResource("5_f5nhl")
+show_cutscene = true
+metadata/_custom_type_script = "uid://byrv03s3ddr0b"
+
+[sub_resource type="Resource" id="Resource_2842h"]
+script = ExtResource("3_jd5kf")
+text = "In my line a work, though, it’d take some kinda miracle to survive ‘long as I have. Thirty-two for a highwayman’s unheard of. Well I didn’t get a miracle, but I sure got summit else."
+image = ExtResource("6_bq2bh")
+show_cutscene = true
+metadata/_custom_type_script = "uid://byrv03s3ddr0b"
+
+[sub_resource type="Resource" id="Resource_cq6to"]
+script = ExtResource("3_jd5kf")
+text = "See, it all woulda ended at nineteen for me. Those flintlocks the coppers carry couldn’t hit fish in a barrel, but, well, when they get lucky, shit hurts like a hot poker."
+image = ExtResource("7_whp1e")
+show_cutscene = true
+metadata/_custom_type_script = "uid://byrv03s3ddr0b"
+
+[sub_resource type="Resource" id="Resource_vqc68"]
+script = ExtResource("3_jd5kf")
+text = "So there I was, bleedin’ all over the place, when the big man downstairs comes to me an’ offers me a deal. "
+image = ExtResource("8_ixjyl")
+show_cutscene = true
+metadata/_custom_type_script = "uid://byrv03s3ddr0b"
+
+[sub_resource type="Resource" id="Resource_yfiq0"]
+script = ExtResource("3_jd5kf")
+text = "See, my death woulda been bad for business. Folks like me encourage sin. One man gets his purse lifted an’ figures its only fair he recovers his loss from some other sucker. Another guy has his prize horse stolen and turns to drinkin’ too much. You see how it is."
+image = ExtResource("4_j1a0j")
+show_cutscene = true
+metadata/_custom_type_script = "uid://byrv03s3ddr0b"
+
+[sub_resource type="Resource" id="Resource_j1a0j"]
+script = ExtResource("3_jd5kf")
+text = "So he says to me, “you promise to keep doing what your doing, and I’ll not only keep you going for some time longer, but also give you a little extra to help your work”"
+image = ExtResource("10_018oa")
+show_cutscene = true
+metadata/_custom_type_script = "uid://byrv03s3ddr0b"
+
+[sub_resource type="Resource" id="Resource_j6j7k"]
+script = ExtResource("3_jd5kf")
+text = "Well, that’s how I got to be the Hellfire Highwayman. Turns out, when you can conjure the flames a’ Hell, them coppers an’ brave nobles don’t much pose a threat. Worked up a bit of a reputation. People stopped fighting back."
+image = ExtResource("11_a71v6")
+show_cutscene = true
+metadata/_custom_type_script = "uid://byrv03s3ddr0b"
+
+[sub_resource type="Resource" id="Resource_20k8y"]
+script = ExtResource("3_jd5kf")
+text = "An’ so I came to think, if no one in the mortal realm can touch me, who says I can’t hold a candle to the immortal realm. "
+image = ExtResource("12_p2od8")
+show_cutscene = true
+metadata/_custom_type_script = "uid://byrv03s3ddr0b"
+
+[sub_resource type="Resource" id="Resource_k6rhx"]
+script = ExtResource("3_jd5kf")
+text = "A few years ago I heard some miners dug deep. Real deep. Lookin’ for gemstones. "
+image = ExtResource("13_whp1e")
+show_cutscene = true
+metadata/_custom_type_script = "uid://byrv03s3ddr0b"
+
+[sub_resource type="Resource" id="Resource_0hfk5"]
+script = ExtResource("3_jd5kf")
+text = "Well they didn’t find any, but those that escaped the mine said they broke into some massive cavern, whole thing lit by bonfires and boiling oil. Monsters crawling around torturing those within. 
+"
+image = ExtResource("14_ixjyl")
+show_cutscene = true
+metadata/_custom_type_script = "uid://byrv03s3ddr0b"
+
+[sub_resource type="Resource" id="Resource_o41vv"]
+script = ExtResource("3_jd5kf")
+text = "I’m gettin’ old. Already past my best. If there’s a time for me to go pay that mine a visit, it’s now."
+image = ExtResource("15_018oa")
+show_cutscene = true
+metadata/_custom_type_script = "uid://byrv03s3ddr0b"
+
+[sub_resource type="Resource" id="Resource_hffke"]
+script = ExtResource("3_jd5kf")
+text = "Sure, I promised Satan my soul, but what if he ain’t around to claim it when I croak?"
+image = ExtResource("17_a71v6")
+show_cutscene = true
+metadata/_custom_type_script = "uid://byrv03s3ddr0b"
+
+[node name="Control" type="Control" unique_id=1428387742]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CutSceneImage" type="TextureRect" parent="." unique_id=111104031]
+z_index = -5
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_7n648")
+expand_mode = 3
+
+[node name="Control" parent="." unique_id=445563848 instance=ExtResource("2_vlwh7")]
+layout_mode = 1
+dialogue = Array[ExtResource("3_jd5kf")]([SubResource("Resource_wbwiw"), SubResource("Resource_qcfcl"), SubResource("Resource_ndjoj"), SubResource("Resource_34wqy"), SubResource("Resource_2842h"), SubResource("Resource_cq6to"), SubResource("Resource_vqc68"), SubResource("Resource_yfiq0"), SubResource("Resource_j1a0j"), SubResource("Resource_j6j7k"), SubResource("Resource_20k8y"), SubResource("Resource_k6rhx"), SubResource("Resource_0hfk5"), SubResource("Resource_o41vv"), SubResource("Resource_hffke")])
+cut_scene_image_path = NodePath("../CutSceneImage")
+fade_duration = 1.0
+load_tutorial_after = true
+next_scene = ExtResource("5_j6j7k")
+chars_per_second = 25.0
+
+[node name="UI" parent="." unique_id=1113695544 instance=ExtResource("19_018oa")]
+EnableCrosshair = false

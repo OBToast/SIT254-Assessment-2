@@ -1,0 +1,110 @@
+[gd_scene format=3 uid="uid://cfdbye6f6bqsu"]
+
+[sub_resource type="GDScript" id="GDScript_0xyb7"]
+script/source = "extends Node3D
+
+@export var rot_speed: float = 6
+@export var raise_amount: float = 0.25
+@export var bob_freq: float = 5.0
+var velocity: Vector3 = Vector3.ZERO
+@export var gravity: float = 10.0
+
+@onready var mesh_instance_3d: MeshInstance3D = $MeshInstance3D
+
+var start_y: float
+var time: float = 0.0
+
+func _ready() -> void:
+	start_y = position.y
+	var rng = RandomNumberGenerator.new()
+	mesh_instance_3d.transform.basis = mesh_instance_3d.transform.basis.rotated(Vector3.UP, rng.randf_range(0,2*PI))
+	time += rng.randf_range(0,10)
+
+func _process(delta: float) -> void:
+	time += delta
+	
+	mesh_instance_3d.transform.basis = mesh_instance_3d.transform.basis.rotated(Vector3.UP, rot_speed * delta)
+	mesh_instance_3d.position.y = start_y + cos(time * bob_freq) * raise_amount + 0.5 # ground offset
+	if velocity != Vector3.ZERO:
+		velocity.y -= gravity * delta
+		global_position += velocity * delta
+
+func _on_body_entered(body: Node3D) -> void:
+	print(body.name)
+	velocity = Vector3.ZERO
+	if body.name == \"Player\":
+		body.take_damage(-20, \"shard\")
+		queue_free()
+
+
+func _on_vacuum_area_body_entered(body: Node3D) -> void:
+	pass # Replace with function body.
+"
+
+[sub_resource type="PrismMesh" id="PrismMesh_1pivh"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1pivh"]
+albedo_color = Color(0.88251054, 0.38914812, 3.85046e-07, 1)
+metallic = 1.0
+roughness = 0.5
+emission_enabled = true
+emission = Color(0.6052743, 0.6052743, 0.6052743, 1)
+emission_energy_multiplier = 13.15
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_1pivh"]
+
+[sub_resource type="GDScript" id="GDScript_3ongi"]
+resource_name = "Vacuum"
+script/source = "extends Area3D
+
+var parent: Area3D
+var target_body: Node3D
+
+@export var pull_strength: float = 5.0
+
+func _ready() -> void:
+	parent = get_parent_node_3d()
+
+func _process(delta: float) -> void:
+	if target_body != null:
+		var direction := target_body.global_position - parent.global_position
+		var distance := direction.length()
+
+		parent.global_position += direction.normalized() * distance * delta
+
+func _on_body_entered(body: Node3D) -> void:
+	if body.name == \"Player\":
+		target_body = body
+
+func _on_body_exited(body: Node3D) -> void:
+	if body == target_body:
+		target_body = null
+"
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_0xyb7"]
+radius = 5.517485
+
+[node name="FlameShard" type="Area3D" unique_id=1529266590]
+script = SubResource("GDScript_0xyb7")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1785327478]
+transform = Transform3D(0.43400994, 0, 0, 0, 0.3181871, 0.042814, 0, -0.20589638, 0.06616367, 0, 0, 0)
+cast_shadow = 0
+gi_mode = 2
+mesh = SubResource("PrismMesh_1pivh")
+surface_material_override/0 = SubResource("StandardMaterial3D_1pivh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1355779860]
+transform = Transform3D(1, 0, 0, 0, 0.83955735, 0.54327106, 0, -0.54327106, 0.83955735, 0, 0, 0)
+shape = SubResource("SphereShape3D_1pivh")
+
+[node name="VacuumArea" type="Area3D" parent="." unique_id=1516714430]
+transform = Transform3D(1, 0, 0, 0, 0.8395574, 0.543271, 0, -0.543271, 0.8395574, 0, 0, 0)
+script = SubResource("GDScript_3ongi")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="VacuumArea" unique_id=63148358]
+shape = SubResource("SphereShape3D_0xyb7")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_entered" from="VacuumArea" to="VacuumArea" method="_on_body_entered"]
+[connection signal="body_exited" from="VacuumArea" to="VacuumArea" method="_on_body_exited"]

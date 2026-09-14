@@ -1,0 +1,1372 @@
+[gd_scene format=3 uid="uid://cmifntt27duei"]
+
+[ext_resource type="AudioStream" uid="uid://bbl8v7yfgx724" path="res://Assets/Audio/PlayerHurt1.mp3" id="1_ukyrk"]
+[ext_resource type="AudioStream" uid="uid://cl7aumsu6lchg" path="res://Assets/Audio/PlayerHurt3.mp3" id="2_7dp3o"]
+[ext_resource type="AudioStream" uid="uid://bpgu63gvn5ldr" path="res://Assets/Audio/PlayerHurt4.mp3" id="3_h4iuc"]
+[ext_resource type="PackedScene" uid="uid://bw13s4h5hsrsv" path="res://Scenes/fireball.tscn" id="4_fd4e3"]
+[ext_resource type="PackedScene" uid="uid://bbym4e13vbn8q" path="res://Scenes/torch.tscn" id="5_qqcod"]
+[ext_resource type="AudioStream" uid="uid://bk6hddlmrik6d" path="res://Assets/Audio/Footstep.wav" id="6_igrcy"]
+[ext_resource type="AudioStream" uid="uid://cjtdiskr42o2b" path="res://Assets/Audio/Landing.wav" id="7_fs7ks"]
+[ext_resource type="AudioStream" uid="uid://dw5u75ghkkpfc" path="res://Assets/Audio/Dash.wav" id="8_l6n3p"]
+[ext_resource type="AudioStream" uid="uid://cmjrfu5fnilvj" path="res://Assets/Audio/Slam.wav" id="9_olqyp"]
+[ext_resource type="AudioStream" uid="uid://ct1cjjg4ih547" path="res://Assets/Audio/KnifeStab.mp3" id="10_wpjfl"]
+[ext_resource type="AudioStream" uid="uid://cbbfh8dmxapri" path="res://Assets/Audio/Burn.mp3" id="11_bi64h"]
+[ext_resource type="AudioStream" uid="uid://ci3484o3aqxeb" path="res://Assets/Audio/Parry - ULTRAKILL SFXs.mp3" id="12_2ijsl"]
+[ext_resource type="AudioStream" uid="uid://bit0g6aupv2n" path="res://Assets/Audio/Heal.mp3" id="13_p1odr"]
+[ext_resource type="Texture2D" uid="uid://vof8ywtydr8c" path="res://Assets/Animations/Equip/Equip00086400.png" id="14_3vlem"]
+[ext_resource type="Texture2D" uid="uid://cbv0y7r5h8g8w" path="res://Assets/Animations/Attack1/Attack1_00086482.png" id="14_c83yi"]
+[ext_resource type="Texture2D" uid="uid://bg3br7n22vadp" path="res://Assets/Animations/Equip/Equip00086401.png" id="15_8eeqe"]
+[ext_resource type="Texture2D" uid="uid://83sf1sprr7jp" path="res://Assets/Animations/Attack1/Attack1_00086483.png" id="15_nyd3j"]
+[ext_resource type="Texture2D" uid="uid://brmdq5d5u23ga" path="res://Assets/Animations/Attack1/Attack1_00086484.png" id="16_0gchq"]
+[ext_resource type="Texture2D" uid="uid://2bb32pob853v" path="res://Assets/Animations/Equip/Equip00086402.png" id="16_5x828"]
+[ext_resource type="Texture2D" uid="uid://cel15vw6oaldb" path="res://Assets/Animations/Attack1/Attack1_00086485.png" id="17_5w755"]
+[ext_resource type="Texture2D" uid="uid://d1g5r3pjy1oc3" path="res://Assets/Animations/Equip/Equip00086403.png" id="17_c1k8q"]
+[ext_resource type="Texture2D" uid="uid://bi3jqntnfmvq6" path="res://Assets/Animations/Attack1/Attack1_00086486.png" id="18_552og"]
+[ext_resource type="Texture2D" uid="uid://oiv534frwxjg" path="res://Assets/Animations/Equip/Equip00086404.png" id="18_e6mvm"]
+[ext_resource type="Texture2D" uid="uid://c305k87nbw0r2" path="res://Assets/Animations/Equip/Equip00086405.png" id="19_57lvd"]
+[ext_resource type="Texture2D" uid="uid://bfo1aheh5mi81" path="res://Assets/Animations/Attack1/Attack1_00086487.png" id="19_giuho"]
+[ext_resource type="Texture2D" uid="uid://dpxeh6ircaxy7" path="res://Assets/Animations/Attack1/Attack1_00086488.png" id="20_gmm01"]
+[ext_resource type="Texture2D" uid="uid://dmmijv6fj1vow" path="res://Assets/Animations/Equip/Equip00086406.png" id="20_ie7r7"]
+[ext_resource type="Texture2D" uid="uid://b1ymtxgtio5t6" path="res://Assets/Animations/Attack1/Attack1_00086489.png" id="21_ott2s"]
+[ext_resource type="Texture2D" uid="uid://b1uoouau5eeel" path="res://Assets/Animations/Equip/Equip00086407.png" id="21_vq3lt"]
+[ext_resource type="Texture2D" uid="uid://c284flutvh3nq" path="res://Assets/Animations/Attack1/Attack1_00086490.png" id="22_ftehy"]
+[ext_resource type="Texture2D" uid="uid://t1h0f64kccej" path="res://Assets/Animations/Equip/Equip00086408.png" id="22_pukcj"]
+[ext_resource type="Texture2D" uid="uid://dsaremvmain2d" path="res://Assets/Animations/Equip/Equip00086409.png" id="23_1htnp"]
+[ext_resource type="Texture2D" uid="uid://dwyq8kqplliod" path="res://Assets/Animations/Attack1/Attack1_00086491.png" id="23_ylvu8"]
+[ext_resource type="Texture2D" uid="uid://cl6u46torr15n" path="res://Assets/Animations/Attack1/Attack1_00086492.png" id="24_lustd"]
+[ext_resource type="Texture2D" uid="uid://bxxslup7sgcc7" path="res://Assets/Animations/Equip/Equip00086410.png" id="24_m376e"]
+[ext_resource type="Texture2D" uid="uid://cqexumbsxklab" path="res://Assets/Animations/Equip/Equip00086411.png" id="25_6b312"]
+[ext_resource type="Texture2D" uid="uid://dtth8la6iri8b" path="res://Assets/Animations/Attack1/Attack1_00086493.png" id="25_gbwas"]
+[ext_resource type="Texture2D" uid="uid://d4lr6ji7fmcpu" path="res://Assets/Animations/Equip/Equip00086412.png" id="26_lisdf"]
+[ext_resource type="Texture2D" uid="uid://diyyac52ahjyd" path="res://Assets/Animations/Attack1/Attack1_00086494.png" id="26_ljkmv"]
+[ext_resource type="Texture2D" uid="uid://rv840tiyr5se" path="res://Assets/Animations/Attack1/Attack1_00086495.png" id="27_8k4al"]
+[ext_resource type="Texture2D" uid="uid://c6jmwbw4kxgxc" path="res://Assets/Animations/Equip/Equip00086413.png" id="27_n1x1j"]
+[ext_resource type="Texture2D" uid="uid://u3km87on43gv" path="res://Assets/Animations/Equip/Equip00086414.png" id="28_c8b32"]
+[ext_resource type="Texture2D" uid="uid://cpeplyhasf3ow" path="res://Assets/Animations/Attack1/Attack1_00086496.png" id="28_e0hkx"]
+[ext_resource type="Texture2D" uid="uid://c20wit4i0j778" path="res://Assets/Animations/Equip/Equip00086415.png" id="29_nj1g2"]
+[ext_resource type="Texture2D" uid="uid://dyq4q0rnou6b4" path="res://Assets/Animations/Attack1/Attack1_00086497.png" id="29_xtit1"]
+[ext_resource type="Texture2D" uid="uid://do2xuy0hqitry" path="res://Assets/Animations/Attack1/Attack1_00086498.png" id="30_151ft"]
+[ext_resource type="Texture2D" uid="uid://cao3na3x38h5x" path="res://Assets/Animations/Equip/Equip00086416.png" id="30_usbl8"]
+[ext_resource type="Texture2D" uid="uid://cmp2uonade4fa" path="res://Assets/Animations/Attack1/Attack1_00086499.png" id="31_274r3"]
+[ext_resource type="Texture2D" uid="uid://ti0fo4bffalj" path="res://Assets/Animations/Equip/Equip00086417.png" id="31_dtg1u"]
+[ext_resource type="Texture2D" uid="uid://bks6a2gglltge" path="res://Assets/Animations/Attack1/Attack1_00086500.png" id="32_5e4ga"]
+[ext_resource type="Texture2D" uid="uid://bn4xobjux07jh" path="res://Assets/Animations/Equip/Equip00086418.png" id="32_nuaet"]
+[ext_resource type="Texture2D" uid="uid://dc06do4tlpa7g" path="res://Assets/Animations/Equip/Equip00086419.png" id="33_bqbau"]
+[ext_resource type="Texture2D" uid="uid://do6u7b2mx6w30" path="res://Assets/Animations/Attack1/Attack1_00086501.png" id="33_rntbp"]
+[ext_resource type="Texture2D" uid="uid://dknp2wwiiwtt5" path="res://Assets/Animations/Equip/Equip00086420.png" id="34_f5f5t"]
+[ext_resource type="Texture2D" uid="uid://b7ijn111cf5k2" path="res://Assets/Animations/Attack1/Attack1_00086502.png" id="34_xw5nt"]
+[ext_resource type="Texture2D" uid="uid://vh144e5bqjqu" path="res://Assets/Animations/Equip/Equip00086421.png" id="35_qvbpb"]
+[ext_resource type="Texture2D" uid="uid://dgtnmra6jj3au" path="res://Assets/Animations/Attack1/Attack1_00086503.png" id="35_rie18"]
+[ext_resource type="Texture2D" uid="uid://br2oelr6f3rf3" path="res://Assets/Animations/Attack2/Attack2_00086516.png" id="36_eycad"]
+[ext_resource type="Texture2D" uid="uid://dl4smoqa64r2t" path="res://Assets/Animations/Equip/Equip00086422.png" id="36_sscpr"]
+[ext_resource type="Texture2D" uid="uid://calulfpj64sji" path="res://Assets/Animations/Attack2/Attack2_00086517.png" id="37_3t3b1"]
+[ext_resource type="Texture2D" uid="uid://botl21esh1b27" path="res://Assets/Animations/Equip/Equip00086423.png" id="37_by7i4"]
+[ext_resource type="Texture2D" uid="uid://d1l3jvc75pyf4" path="res://Assets/Animations/Equip/Equip00086424.png" id="38_3uvy8"]
+[ext_resource type="Texture2D" uid="uid://c5ff7btd1c712" path="res://Assets/Animations/Attack2/Attack2_00086518.png" id="38_dixlh"]
+[ext_resource type="Texture2D" uid="uid://b1buvm071pj2n" path="res://Assets/Animations/Attack2/Attack2_00086519.png" id="39_pd0oe"]
+[ext_resource type="Texture2D" uid="uid://j45lctmf4r62" path="res://Assets/Animations/Equip/Equip00086425.png" id="39_ss172"]
+[ext_resource type="Texture2D" uid="uid://bf5af5mbkhxuy" path="res://Assets/Animations/Attack2/Attack2_00086520.png" id="40_dxcir"]
+[ext_resource type="Texture2D" uid="uid://cjkawto7kbdf4" path="res://Assets/Animations/Equip/Equip00086426.png" id="40_jmelf"]
+[ext_resource type="Texture2D" uid="uid://w5yosbxdk6w2" path="res://Assets/Animations/Attack2/Attack2_00086521.png" id="41_7rs8m"]
+[ext_resource type="Texture2D" uid="uid://s72qyt55r6yo" path="res://Assets/Animations/Equip/Equip00086427.png" id="41_bjdqd"]
+[ext_resource type="Texture2D" uid="uid://4obqnfx4asc1" path="res://Assets/Animations/Attack2/Attack2_00086522.png" id="42_7s2nw"]
+[ext_resource type="Texture2D" uid="uid://d38muvvei8bj3" path="res://Assets/Animations/Equip/Equip00086428.png" id="42_feq18"]
+[ext_resource type="Texture2D" uid="uid://biclgahel2km3" path="res://Assets/Animations/Attack2/Attack2_00086523.png" id="43_6kbb5"]
+[ext_resource type="Texture2D" uid="uid://t4s08xjvhniy" path="res://Assets/Animations/Equip/Equip00086429.png" id="43_wcnj3"]
+[ext_resource type="Texture2D" uid="uid://dlki0h5vpwroy" path="res://Assets/Animations/Attack2/Attack2_00086524.png" id="44_0hblt"]
+[ext_resource type="Texture2D" uid="uid://lbmpwufjiv02" path="res://Assets/Animations/Equip/Equip00086430.png" id="44_jsob3"]
+[ext_resource type="Texture2D" uid="uid://xaaqjglvr1wi" path="res://Assets/Animations/Attack2/Attack2_00086525.png" id="45_o62sq"]
+[ext_resource type="Texture2D" uid="uid://dj4fxauork4e6" path="res://Assets/Animations/Equip/Equip00086431.png" id="45_pg0gw"]
+[ext_resource type="Texture2D" uid="uid://be54xn5few8p2" path="res://Assets/Animations/Attack2/Attack2_00086526.png" id="46_jltdh"]
+[ext_resource type="Texture2D" uid="uid://bsistdp2nnjvq" path="res://Assets/Animations/Equip/Equip00086432.png" id="46_qavoy"]
+[ext_resource type="Texture2D" uid="uid://cmmlptnivflj4" path="res://Assets/Animations/Attack2/Attack2_00086527.png" id="47_30y2g"]
+[ext_resource type="Texture2D" uid="uid://268slvks16oa" path="res://Assets/Animations/Equip/Equip00086433.png" id="47_w4w4b"]
+[ext_resource type="Texture2D" uid="uid://c0mx66obus7jc" path="res://Assets/Animations/Attack2/Attack2_00086528.png" id="48_n4tw8"]
+[ext_resource type="Texture2D" uid="uid://74jb3fqoxp6b" path="res://Assets/Animations/Attack2/Attack2_00086529.png" id="49_cg4bv"]
+[ext_resource type="Texture2D" uid="uid://cbw55wtjoaper" path="res://Assets/Animations/Attack3/Attack3_00086539.png" id="50_5xxh7"]
+[ext_resource type="Texture2D" uid="uid://cjp0q4ar7ee81" path="res://Assets/Animations/Attack3/Attack3_00086540.png" id="51_5un75"]
+[ext_resource type="Texture2D" uid="uid://blnfdd5bspd2v" path="res://Assets/Animations/Attack3/Attack3_00086541.png" id="52_v76sx"]
+[ext_resource type="Texture2D" uid="uid://cgsxtnb7g4six" path="res://Assets/Animations/Attack3/Attack3_00086542.png" id="53_dxncu"]
+[ext_resource type="Texture2D" uid="uid://copn5bvk87qo2" path="res://Assets/Animations/Attack3/Attack3_00086543.png" id="54_tgi02"]
+[ext_resource type="Texture2D" uid="uid://7gqpasd5oj7b" path="res://Assets/Animations/Attack3/Attack3_00086544.png" id="55_350sb"]
+[ext_resource type="Texture2D" uid="uid://lgglea8i7rny" path="res://Assets/Animations/Attack3/Attack3_00086545.png" id="56_clpr6"]
+[ext_resource type="Texture2D" uid="uid://bxgugv15i8oou" path="res://Assets/Animations/Attack3/Attack3_00086546.png" id="57_a8h1b"]
+[ext_resource type="Texture2D" uid="uid://coewsofle3ici" path="res://Assets/Animations/Attack3/Attack3_00086547.png" id="58_1yobx"]
+[ext_resource type="Texture2D" uid="uid://c433cuxymj0yc" path="res://Assets/Animations/Attack3/Attack3_00086548.png" id="59_dugqs"]
+[ext_resource type="Texture2D" uid="uid://dq4iyt1qcf86l" path="res://Assets/Animations/Attack3/Attack3_00086549.png" id="60_opsut"]
+[ext_resource type="Texture2D" uid="uid://pthbgnhuiy80" path="res://Assets/Animations/Attack3/Attack3_00086550.png" id="61_kf2cg"]
+[ext_resource type="Texture2D" uid="uid://cwwoxpny6e4u2" path="res://Assets/Animations/Attack3/Attack3_00086551.png" id="62_7oajy"]
+[ext_resource type="Texture2D" uid="uid://c1w82w71kbghj" path="res://Assets/Animations/Attack3/Attack3_00086552.png" id="63_putmv"]
+[ext_resource type="Texture2D" uid="uid://capk6xaurs8re" path="res://Assets/Animations/Attack3/Attack3_00086553.png" id="64_42xjn"]
+[ext_resource type="Texture2D" uid="uid://b4mvk5yg1paud" path="res://Assets/Animations/Attack3/Attack3_00086554.png" id="65_lyvbx"]
+[ext_resource type="Texture2D" uid="uid://bl58anv02dr45" path="res://Assets/Animations/Attack3/Attack3_00086555.png" id="66_g3j25"]
+[ext_resource type="Texture2D" uid="uid://3nh03i8bkheh" path="res://Assets/Animations/Attack3/Attack3_00086556.png" id="67_conkd"]
+[ext_resource type="Texture2D" uid="uid://cntr1ifq3wvnj" path="res://Assets/Animations/Attack3/Attack3_00086557.png" id="68_8vg0g"]
+[ext_resource type="Texture2D" uid="uid://d1qc35jbd5k75" path="res://Assets/Animations/Attack3/Attack3_00086558.png" id="69_ccrn4"]
+[ext_resource type="Texture2D" uid="uid://uj2n68rinrlg" path="res://Assets/Animations/Attack3/Attack3_00086559.png" id="70_w6sri"]
+[ext_resource type="Texture2D" uid="uid://ckpgaq8rkgmgf" path="res://Assets/Animations/Attack3/Attack3_00086560.png" id="71_glhg8"]
+[ext_resource type="Texture2D" uid="uid://dc1qkjpgwxopr" path="res://Assets/Animations/Attack3/Attack3_00086561.png" id="72_sn7do"]
+[ext_resource type="Texture2D" uid="uid://xa34akhenlua" path="res://Assets/Animations/Attack3/Attack3_00086562.png" id="73_hr2my"]
+[ext_resource type="Texture2D" uid="uid://1gysowc5pk4r" path="res://Assets/Animations/Attack3/Attack3_00086563.png" id="74_eq8ts"]
+[ext_resource type="Texture2D" uid="uid://d3aubxfo7s4wn" path="res://Assets/Animations/Attack3/Attack3_00086564.png" id="75_80ubf"]
+[ext_resource type="Texture2D" uid="uid://b63tusoxlcyla" path="res://Assets/Animations/Attack3/Attack3_00086565.png" id="76_wklt6"]
+[ext_resource type="Texture2D" uid="uid://c4mo7um1ugo2w" path="res://Assets/Animations/Idle/Idle00086427.png" id="111_j1njn"]
+[ext_resource type="Texture2D" uid="uid://c8g2apmg7i3ae" path="res://Assets/Animations/Idle/Idle00086428.png" id="112_1o6t6"]
+[ext_resource type="Texture2D" uid="uid://cubkqfjsrpdux" path="res://Assets/Animations/Idle/Idle00086429.png" id="113_anjwu"]
+[ext_resource type="Texture2D" uid="uid://6knosolxbdvw" path="res://Assets/Animations/Idle/Idle00086430.png" id="114_7f17t"]
+[ext_resource type="Texture2D" uid="uid://0rbbwdxmwc5h" path="res://Assets/Animations/Idle/Idle00086431.png" id="115_xb2p6"]
+[ext_resource type="Texture2D" uid="uid://b88ahqkll6xr" path="res://Assets/Animations/Idle/Idle00086432.png" id="116_m0wci"]
+[ext_resource type="Texture2D" uid="uid://c5mm4y5dxec7h" path="res://Assets/Animations/Idle/Idle00086433.png" id="117_uquv7"]
+[ext_resource type="Texture2D" uid="uid://cd5chmbchtt7f" path="res://Assets/Animations/Idle/Idle00086434.png" id="118_xirkt"]
+[ext_resource type="Texture2D" uid="uid://3ij42rayler4" path="res://Assets/Animations/Idle/Idle00086435.png" id="119_852nj"]
+[ext_resource type="Texture2D" uid="uid://mugnwvavifx7" path="res://Assets/Animations/Idle/Idle00086436.png" id="120_a46fe"]
+[ext_resource type="Texture2D" uid="uid://bnmpgmw7ydhpc" path="res://Assets/Animations/Idle/Idle00086437.png" id="121_fgsmf"]
+[ext_resource type="Texture2D" uid="uid://6cil2qwq4wjk" path="res://Assets/Animations/Idle/Idle00086438.png" id="122_sxb3n"]
+[ext_resource type="Texture2D" uid="uid://mopoxq1ksbxj" path="res://Assets/Animations/Idle/Idle00086439.png" id="123_lao3j"]
+[ext_resource type="Texture2D" uid="uid://btq37lx7jcea0" path="res://Assets/Animations/Idle/Idle00086440.png" id="124_jhrtw"]
+[ext_resource type="Texture2D" uid="uid://bgui60ah1daml" path="res://Assets/Animations/Idle/Idle00086441.png" id="125_5ca5e"]
+[ext_resource type="Texture2D" uid="uid://dh6llf6plrfey" path="res://Assets/Animations/Idle/Idle00086442.png" id="126_sy4jq"]
+[ext_resource type="Texture2D" uid="uid://bmxo1qutxx8at" path="res://Assets/Animations/Idle/Idle00086443.png" id="127_bwwr5"]
+[ext_resource type="Texture2D" uid="uid://dq00t0rp5aw65" path="res://Assets/Animations/Idle/Idle00086444.png" id="128_opsnh"]
+[ext_resource type="Texture2D" uid="uid://tqpilw55f7jh" path="res://Assets/Animations/Idle/Idle00086445.png" id="129_jin74"]
+[ext_resource type="Texture2D" uid="uid://bh73wsu4vn5oo" path="res://Assets/Animations/Idle/Idle00086446.png" id="130_6foxs"]
+[ext_resource type="Texture2D" uid="uid://cty32n1eiiy7i" path="res://Assets/Animations/Run/Run00086446.png" id="131_hyfd3"]
+[ext_resource type="Texture2D" uid="uid://bakq26s38o71" path="res://Assets/Animations/Run/Run00086447.png" id="132_sn352"]
+[ext_resource type="Texture2D" uid="uid://x0runtdu3yua" path="res://Assets/Animations/Run/Run00086448.png" id="133_1mxuw"]
+[ext_resource type="Texture2D" uid="uid://ccakx8b28ha47" path="res://Assets/Animations/Run/Run00086449.png" id="134_qobc4"]
+[ext_resource type="Texture2D" uid="uid://b74pfw1boqye5" path="res://Assets/Animations/Run/Run00086450.png" id="135_hd3oi"]
+[ext_resource type="Texture2D" uid="uid://ca1461lwwnb3h" path="res://Assets/Animations/Run/Run00086451.png" id="136_jdodw"]
+[ext_resource type="Texture2D" uid="uid://d324fo1s7vbgu" path="res://Assets/Animations/Run/Run00086452.png" id="137_fx4up"]
+[ext_resource type="Texture2D" uid="uid://ce01jfr0eiakn" path="res://Assets/Animations/Run/Run00086453.png" id="138_hs564"]
+[ext_resource type="Texture2D" uid="uid://ey4bapbts33t" path="res://Assets/Animations/Run/Run00086454.png" id="139_73ytd"]
+[ext_resource type="Texture2D" uid="uid://ckhk7kym3xhk8" path="res://Assets/Animations/Run/Run00086455.png" id="140_6j22i"]
+[ext_resource type="Texture2D" uid="uid://bl7g35e0lvpdr" path="res://Assets/Animations/Run/Run00086456.png" id="141_fjcx3"]
+[ext_resource type="Texture2D" uid="uid://cf7m4xfqv1hyf" path="res://Assets/Animations/Run/Run00086457.png" id="142_kule2"]
+[ext_resource type="Texture2D" uid="uid://dbrqm8racfura" path="res://Assets/Animations/Run/Run00086458.png" id="143_rfrs5"]
+[ext_resource type="Texture2D" uid="uid://dnby3ncwyvj22" path="res://Assets/Animations/Run/Run00086459.png" id="144_tay0l"]
+[ext_resource type="Texture2D" uid="uid://fsibur7fw70h" path="res://Assets/Animations/Run/Run00086460.png" id="145_lilql"]
+[ext_resource type="Texture2D" uid="uid://bjf7m5wrrtuf4" path="res://Assets/Animations/Run/Run00086461.png" id="146_las4e"]
+[ext_resource type="Texture2D" uid="uid://nkfrajuf6rvd" path="res://Assets/Animations/Run/Run00086462.png" id="147_s7tlt"]
+[ext_resource type="Texture2D" uid="uid://doo04averdwxx" path="res://Assets/Animations/Run/Run00086463.png" id="148_q3ije"]
+[ext_resource type="Texture2D" uid="uid://dvva43puppfp7" path="res://Assets/Animations/Run/Run00086464.png" id="149_hib1f"]
+[ext_resource type="Texture2D" uid="uid://briobuf3rpulr" path="res://Assets/Animations/Run/Run00086465.png" id="150_k2dtw"]
+[ext_resource type="Texture2D" uid="uid://l7bepphgcin4" path="res://Assets/Animations/Run/Run00086466.png" id="151_3gds3"]
+[ext_resource type="Texture2D" uid="uid://cqodjehlqn744" path="res://Assets/Animations/Run/Run00086467.png" id="152_1mfy4"]
+[ext_resource type="Texture2D" uid="uid://dw6hh7g25ei6" path="res://Assets/Animations/Run/Run00086468.png" id="153_kxghe"]
+[ext_resource type="Texture2D" uid="uid://ygfty2laxx4q" path="res://Assets/Animations/Run/Run00086469.png" id="154_cgoqe"]
+[ext_resource type="Texture2D" uid="uid://cumn7tkcpbvor" path="res://Assets/Animations/Run/Run00086470.png" id="155_avo2n"]
+[ext_resource type="Texture2D" uid="uid://640i4s7nc4me" path="res://Assets/Animations/Run/Run00086471.png" id="156_up6bw"]
+[ext_resource type="Texture2D" uid="uid://ctjwm5yip22s0" path="res://Assets/Animations/Run/Run00086472.png" id="157_guu55"]
+[ext_resource type="Texture2D" uid="uid://bund6xbm7bk4q" path="res://Assets/Animations/Run/Run00086473.png" id="158_pkb4m"]
+[ext_resource type="Texture2D" uid="uid://cuortr8mitbsb" path="res://Assets/Animations/Run/Run00086474.png" id="159_mewyl"]
+[ext_resource type="Texture2D" uid="uid://d1yh3rh8njtk3" path="res://Assets/Animations/Run/Run00086475.png" id="160_xkv1o"]
+[ext_resource type="Texture2D" uid="uid://crhuhc5torhcg" path="res://Assets/Animations/Run/Run00086476.png" id="161_tw6kh"]
+[ext_resource type="Texture2D" uid="uid://ccdjvsoxfwstt" path="res://Assets/Animations/Run/Run00086477.png" id="162_h1nam"]
+[ext_resource type="Texture2D" uid="uid://caeblovgkmnat" path="res://Assets/Animations/Run/Run00086478.png" id="163_uxvhu"]
+[ext_resource type="Texture2D" uid="uid://cfaqp36018w2n" path="res://Assets/Animations/Run/Run00086479.png" id="164_h5eni"]
+[ext_resource type="Texture2D" uid="uid://cr3k10hghdauq" path="res://Assets/Animations/Run/Run00086480.png" id="165_jn6xu"]
+[ext_resource type="Texture2D" uid="uid://cf8i3iqi3b07g" path="res://Assets/Animations/Run/Run00086481.png" id="166_mwa7g"]
+[ext_resource type="Texture2D" uid="uid://dkamrpxswktls" path="res://Assets/Animations/Run/Run00086482.png" id="167_dcbrc"]
+
+[sub_resource type="GDScript" id="GDScript_1pivh"]
+resource_name = "Player"
+script/source = "extends CharacterBody3D
+
+enum states {GROUND, AIR, SLAM, DASH}
+var current_state: states = states.GROUND
+
+const WALK_SPEED = 18
+const SPRINT_SPEED = 20.0
+var speed = WALK_SPEED
+
+var fall_velocity = 0.0
+const JUMP_VELOCITY = 15.0
+const PLAYER_GRAVITY = Vector3(0, -25.0, 0)
+const MAX_FALL_SPEED = -25
+const SENSITIVITY = 0.01
+const AIR_CONTROL = 4.0 # Air control is measured in % per frame
+
+const DASH_SPEED = 25
+const DASH_DURATION = 0.15
+
+var dash_timer = 0.0
+var dash_direction = Vector3.ZERO
+
+# Variable landing volume
+const LANDING_SFX_MIN_VELOCITY = 5
+const LANDING_SFX_MAX_VELOCITY = 20
+const LANDING_SFX_MIN_VOLUME = -50
+const LANDING_SFX_MAX_VOLUME = -25
+
+# Head bobbing
+const BOB_FREQ = 1.2
+const BOB_AMP = 0.08
+var t_bob = 0
+var last_bob_x_position = 0.0
+var last_bob_direction = 0
+var head_bobbing_x_position = 0.0
+var head_bobbing_y_position = 0.0
+
+# Fov variables
+const BASE_FOV = 80
+const FOV_SPEED_BOOST = 1
+
+@onready var head = $Head
+@onready var camera = $Head/Camera3D
+@onready var footsteps_sfx: AudioStreamPlayer3D = $Feet/Footsteps
+@onready var jump_sfx: AudioStreamPlayer3D = $Feet/Jump
+@onready var landing_sfx: AudioStreamPlayer3D = $Feet/Landing
+@onready var dash_sfx: AudioStreamPlayer3D = $Feet/Dash
+@onready var slam_sfx: AudioStreamPlayer3D = $Feet/Slam
+@export var hit_sounds: Array[AudioStream] = []
+@onready var hurt_sfx: AudioStreamPlayer3D = $HurtSFX
+@onready var impact_sfx: AudioStreamPlayer3D = $ImpactSFX
+@onready var heal_sfx: AudioStreamPlayer3D = $HealSFX
+@onready var burn_sfx: AudioStreamPlayer3D = $BurnSFX
+@onready var parry_sfx: AudioStreamPlayer3D = $ParrySFX
+
+@export var fireball_scene: PackedScene
+@export var fireball_speed: float = 20.0
+@export var spawn_offset: float = 1.0
+
+@onready var torch: Node3D = $Head/Camera3D/Torch
+@onready var pause_menu: Control = $\"../UI/PauseMenu\"
+@onready var fire_bar: TextureProgressBar = $\"../FireBar/FireBar\"
+@onready var fire_vfx: GPUParticles2D = $\"../FireBar/Fire\"
+
+@onready var torch_sprites: AnimatedSprite2D = $TorchSprites
+
+var fire_bar_texture_height
+var fire_vfx_y_offset
+
+@export var grapple_range: float = 0.0 #I'VE TURNED IT OFF FOR NOW, 20 is a good value
+@export var enemy_group: String = \"enemies\"
+var current_target: Node3D = null
+@onready var grapple_icon: Sprite2D = $\"../UI/GrappleIcon\"
+@export var icon_scale_near: float = 2 
+@export var icon_scale_far: float = 0.75
+
+@export var parry_range: float = 4.0
+const PARRY_COOLDOWN = 0.6
+var parry_cooldown_timer: float = 0.0
+
+var fireball_cooldown = 0.0
+const FIREBALL_COOLDOWN_TIME = 1.0
+
+@export var is_burning: bool = true
+@export var total_burn_time_easy: float
+@export var total_burn_time_med: float
+@export var total_burn_time_hard: float
+var current_burn_time: float = 0.0   # counts down — how much longer the burn lasts
+var burn_damage_rate: float = 0.0    # fire_bar units drained per second
+
+const SETTINGS_FILE := \"user://settings.cfg\"
+var is_dead := false
+
+const RUN_ANIM_THRESHOLD = 3.0    # horizontal speed needed to switch torch sprite to Run
+const STOP_ANIM_THRESHOLD = 0.05  # horizontal speed below which Run is allowed to switch back to Idle
+var torch_pending_switch: String = \"\" # animation name queued to play once Run hits frame 0
+
+var combo_step := 0        # 0 = not attacking, 1/2/3 = which attack is currently playing
+var attack_queued := false # true if the player clicked again during the current attack
+
+# Frame windows (inclusive) during which each attack animation actually lands a hit.
+# Checked in _on_torch_sprites_frame_changed, which fires every frame the sprite
+# advances — animation_finished only fires once the clip is already over, so it
+# can't be used to catch a mid-clip hit window.
+const ATTACK_HIT_FRAMES := {
+	\"Attack1\": Vector2i(17, 21),
+	\"Attack2\": Vector2i(8, 12),
+	\"Attack3\": Vector2i(9, 20),
+}
+var hit_registered_this_swing := false # prevents torch.attack() firing repeatedly while inside the window
+
+func _ready():
+	Engine.time_scale = 1.0
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	fire_bar_texture_height = (fire_bar.texture_progress.get_height())
+	fire_vfx_y_offset = fire_vfx.position.y
+
+	torch_sprites.play(\"Equip\")
+	torch_sprites.animation_finished.connect(_on_torch_sprites_animation_finished)
+	torch_sprites.frame_changed.connect(_on_torch_sprites_frame_changed)
+
+	if total_burn_time_med == null or total_burn_time_med == 0:
+		print(\"WARNING TOTAL BURN TIME TOO SHORT FOR LEVEL\")
+	
+	var config := ConfigFile.new()
+	if config.load(SETTINGS_FILE) != OK:
+		print(\"No settings file found.\")
+		return
+	var diff = config.get_value(\"settings\", \"difficulty\", \"Medium\")
+	print(\"Difficulty in settings file: \", diff)
+
+	var chosen_burn_time: float
+	match diff:
+		\"Easy\":
+			chosen_burn_time = total_burn_time_easy
+		\"Medium\":
+			chosen_burn_time = total_burn_time_med
+		\"Hard\":
+			chosen_burn_time = total_burn_time_hard
+		_:
+			chosen_burn_time = total_burn_time_med
+
+	current_burn_time = chosen_burn_time
+	burn_damage_rate = 100 / chosen_burn_time
+	print(\"burn_damage_rate: \", burn_damage_rate)
+	
+func _unhandled_input(event):
+	if is_dead:
+		return
+	if event is InputEventMouseMotion && Input.mouse_mode == Input.MOUSE_MODE_CAPTURED: # Only move camera when mouse captured
+		head.rotate_y(-event.relative.x * SENSITIVITY * pause_menu.mouse_sensitivity)
+		camera.rotate_x(-event.relative.y * SENSITIVITY * pause_menu.mouse_sensitivity)
+		camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-85), deg_to_rad(85))
+
+func _physics_process(delta: float) -> void:
+	if is_dead:
+		return
+	parry_cooldown_timer = max(parry_cooldown_timer - delta, 0.0)
+
+	if is_burning:
+		fire_bar.value -= burn_damage_rate * delta
+		update_fire_vfx()
+
+		if fire_bar.value <= 0.0:
+			current_burn_time = 0.0
+			is_burning = false
+			die()
+
+	# Restart
+	if Input.is_action_just_pressed(\"Restart\"):
+		get_tree().paused = false
+		Engine.time_scale = 1.0
+		get_tree().reload_current_scene()
+		
+	# ================ SLAM  ================ 
+	if Input.is_action_just_pressed(\"Slam\") and not is_on_floor() and current_state != states.SLAM:
+		current_state = states.SLAM
+		slam_sfx.play()
+		velocity = Vector3(0,MAX_FALL_SPEED,0)
+
+	# ================ DASH ================ 
+	if Input.is_action_just_pressed(\"Dash\") and current_state != states.DASH and current_state != states.SLAM:
+		start_dash()
+
+	# ================ ATTACK ==================
+	# NOTE: moved above the DASH-active block's early `return` below. Previously,
+	# an Attack press that landed during the ~0.15s dash window was silently
+	# dropped because the function returned before ever reaching this check —
+	# that's why attacks sometimes \"didn't play\" over idle/run. Attack input is
+	# now always evaluated each frame regardless of dash state. Parry is
+	# intentionally left where it was, since _can_parry() already blocks it
+	# during DASH/SLAM by design.
+	if Input.is_action_just_pressed(\"Attack\"):
+		print(\"Attack\", combo_step)
+		if combo_step == 0:
+			# Not currently attacking — start the combo fresh
+			combo_step = 1
+			hit_registered_this_swing = false
+			torch_sprites.play(\"Attack1\")
+		elif combo_step < 3:
+			# Mid-combo — buffer the next hit (only one queued at a time)
+			attack_queued = true
+
+	if current_state == states.DASH:
+		dash_timer -= delta
+
+		# Lock velocity to the dash direction
+		velocity = dash_direction * DASH_SPEED
+
+		# No gravity or movement while dashing
+		move_and_slide()
+
+		if dash_timer <= 0.0:
+			current_state = states.GROUND if is_on_floor() else states.AIR
+
+		return
+	
+	# ================ PARRY ==================
+	if Input.is_action_just_pressed(\"Parry\") and _can_parry():
+		torch.attack(\"parry\")
+		var success = _try_parry()
+		if not success:
+			parry_cooldown_timer = PARRY_COOLDOWN
+	
+	if Input.is_action_pressed(\"E\"):	
+		fire_bar.value += 1
+		update_fire_vfx()
+		
+	if Input.is_action_pressed(\"Q\"):
+		fire_bar.value -= 1
+		update_fire_vfx()
+	
+	if Input.is_action_just_pressed(\"Fireball\") and fireball_cooldown <= 0:
+		shoot_fireball()
+		fireball_cooldown = FIREBALL_COOLDOWN_TIME
+		
+
+	# ================ MOVEMENT ================ 
+	# Gravity + landing sfx
+	if not is_on_floor():
+		velocity += PLAYER_GRAVITY * delta
+		velocity.y = max(velocity.y, MAX_FALL_SPEED)
+		# Store the fastest downward speed
+		fall_velocity = min(velocity.y, fall_velocity)
+		if current_state != states.SLAM:
+			current_state = states.AIR
+	else:
+		if current_state == states.AIR or current_state == states.SLAM:
+			print(\"Fall speed:\", fall_velocity)
+			var impact_volume = remap(abs(fall_velocity), LANDING_SFX_MIN_VELOCITY, LANDING_SFX_MAX_VELOCITY, LANDING_SFX_MIN_VOLUME, LANDING_SFX_MAX_VOLUME)
+			landing_sfx.volume_db = clamp(impact_volume, LANDING_SFX_MIN_VOLUME, LANDING_SFX_MAX_VOLUME)
+			landing_sfx.play()
+			fall_velocity = 0.0
+		current_state = states.GROUND
+
+	# Jump
+	if Input.is_action_just_pressed(\"Jump\") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+		jump_sfx.play()
+	
+	var input_dir := Input.get_vector(\"Left\", \"Right\", \"Forward\", \"Back\")
+	var direction: Vector3 = (head.global_basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized()
+	if current_state == states.SLAM:
+		pass # no horizontal control while slamming
+	elif current_state == states.GROUND:
+		if direction != Vector3.ZERO:
+			velocity.x = direction.x * speed
+			velocity.z = direction.z * speed
+		else:
+			velocity.x = 0.0
+			velocity.z = 0.0
+	else:
+		velocity.x = lerp(velocity.x, direction.x * speed, delta * AIR_CONTROL)
+		velocity.z = lerp(velocity.z, direction.z * speed, delta * AIR_CONTROL)
+
+	# Headbobbing
+	t_bob += delta * velocity.length() * float(is_on_floor())
+	camera.transform.origin = _headbob(t_bob)
+
+	# FOV
+	var velocity_clamped = clamp(velocity.length(), 0.5, SPRINT_SPEED * 2)
+	var target_fov = BASE_FOV + FOV_SPEED_BOOST * velocity_clamped
+	camera.fov = lerp(camera.fov, target_fov, delta * 8.0)
+	
+	#rope.scale = Vector3(1, 2 * global_position.distance_to(current_target.global_position), 1)
+	#print(rope.scale)
+	
+	play_footsteps()
+	update_torch_animation()
+	move_and_slide()
+
+func _process(_delta):
+	current_target = find_best_target()
+	update_grapple_icon()
+	if fireball_cooldown > 0:
+		fireball_cooldown -= _delta
+
+func update_fire_vfx():
+	var fire_percent = fire_bar.value / 100.0
+	var mat = fire_vfx.process_material
+	
+	#fire_vfx.amount = int(lerp(5.0, 32.0, fire_percent))
+
+	mat.scale_min = lerp(0.4, 0.8, fire_percent)
+	mat.scale_max = lerp(0.4, 1.2, fire_percent)
+
+	mat.initial_velocity_min = lerp(5.0, 30.0, fire_percent)
+	mat.initial_velocity_max = lerp(10.0, 60.0, fire_percent)
+
+	fire_vfx.position.y = (fire_bar_texture_height- fire_bar.value * (fire_bar_texture_height / 100.0) + fire_vfx_y_offset)
+
+func _headbob(time) -> Vector3:
+	var pos = Vector3.ZERO
+	head_bobbing_x_position = cos(time * BOB_FREQ / 2) * BOB_AMP
+	head_bobbing_y_position = sin(time * BOB_FREQ) * BOB_AMP
+
+	pos.x = head_bobbing_x_position
+	pos.y = head_bobbing_y_position
+	return pos
+
+func play_footsteps() -> void:
+	if velocity != Vector3.ZERO:
+		var bob_position_x = head_bobbing_x_position
+		var bob_direction = sign(bob_position_x - last_bob_x_position)
+
+		if bob_direction != 0 and bob_direction != last_bob_direction and last_bob_direction != 0:
+			footsteps_sfx.play()
+
+		last_bob_direction = bob_direction
+		last_bob_x_position = bob_position_x
+	else:
+		last_bob_direction = 0
+		last_bob_x_position = head_bobbing_x_position
+
+func start_dash() -> void:
+	dash_sfx.play()
+	current_state = states.DASH
+	dash_timer = DASH_DURATION
+
+	var input_dir := Input.get_vector(\"Left\", \"Right\", \"Forward\", \"Back\")
+	var direction: Vector3 = (head.global_basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized()
+
+	# If there is no movement input, dash forward
+	if direction == Vector3.ZERO:
+		direction = -head.global_basis.z
+		direction.y = 0.0
+		direction = direction.normalized()
+
+	dash_direction = direction
+	velocity = dash_direction * DASH_SPEED
+
+func find_best_target() -> Node3D:
+	var viewport_size = get_viewport().get_visible_rect().size
+	var screen_center = viewport_size / 2.0
+	var cam = get_viewport().get_camera_3d()
+
+	var best_target: Node3D = null
+	var best_dist_sq: float = INF
+
+	for enemy in get_tree().get_nodes_in_group(enemy_group):
+		if not is_instance_valid(enemy):
+			continue
+
+		# range check in world space
+		if global_position.distance_to(enemy.global_position) > grapple_range:
+			continue
+
+		# skip enemies behind the camera — unproject_position doesn't clip this itself
+		if cam.is_position_behind(enemy.global_position):
+			continue
+
+		var screen_pos = cam.unproject_position(enemy.global_position)
+
+		# optional: skip enemies that unprojected off-screen
+		if screen_pos.x < 0 or screen_pos.x > viewport_size.x or screen_pos.y < 0 or screen_pos.y > viewport_size.y:
+			continue
+
+		var dist_sq = screen_pos.distance_squared_to(screen_center)
+
+		if dist_sq < best_dist_sq:
+			best_dist_sq = dist_sq
+			best_target = enemy
+
+	return best_target
+
+func update_grapple_icon():
+	if current_target and is_instance_valid(current_target):
+		var cam = get_viewport().get_camera_3d()
+		if cam.is_position_behind(current_target.global_position):
+			grapple_icon.visible = false
+			return
+			
+		grapple_icon.visible = true
+		grapple_icon.global_position = cam.unproject_position(current_target.global_position)
+
+		# scale based on distance
+		var dist = global_position.distance_to(current_target.global_position)
+		var dist_percent = clamp(dist / grapple_range, 0.0, 1.0)
+		var target_scale = lerp(icon_scale_near, icon_scale_far, dist_percent)
+		grapple_icon.scale = Vector2(target_scale, target_scale)
+		
+	else:
+		grapple_icon.visible = false
+	
+func shoot_fireball() -> void:
+	var fireball = fireball_scene.instantiate()
+	get_tree().current_scene.add_child(fireball)
+
+	# Direction the camera is facing (world space, forward is -Z in Godot)
+	var direction: Vector3 = -camera.global_transform.basis.z
+
+	# Spawn slightly in front of the camera so it doesn't collide with the player
+	fireball.global_position = camera.global_position + direction * spawn_offset
+
+	# Orient the fireball to face the direction it's traveling
+	fireball.look_at(fireball.global_position + direction, Vector3.UP)
+
+	# If your fireball script has a velocity/speed property, set it here
+	if fireball.has_method(\"set_velocity\"):
+		fireball.set_velocity(direction * fireball_speed)
+	elif \"velocity\" in fireball:
+		fireball.velocity = direction * fireball_speed
+
+func take_damage(amount: float, source) -> void:
+	if source == \"torch\":
+		return # don't damage self
+	if source != \"shard\":
+		pause_menu.play_damage_visual()
+		if not impact_sfx.playing:
+			impact_sfx.play()
+		if not hurt_sfx.playing:
+			hurt_sfx.stream = hit_sounds[randi() % hit_sounds.size()]
+			hurt_sfx.play()
+	else:
+		pause_menu.play_heal_visual()
+		heal_sfx.play()
+		burn_sfx.play()
+	fire_bar.value -= amount
+	update_fire_vfx()
+
+func _can_parry() -> bool:
+	if current_state == states.DASH or current_state == states.SLAM:
+		return false
+	if torch.has_method(\"is_busy\") and torch.is_busy():
+		return false
+	if parry_cooldown_timer > 0.0:
+		return false
+	return true
+
+func _try_parry() -> bool:
+	for enemy in get_tree().get_nodes_in_group(enemy_group):
+		if not is_instance_valid(enemy):
+			continue
+		if not (\"is_attacking\" in enemy and \"is_parryable\" in enemy):
+			continue
+		if enemy.is_attacking and enemy.is_parryable:
+			if global_position.distance_to(enemy.global_position) <= parry_range:
+				parry_sfx.play()
+				pause_menu.play_parry_visual()
+				if enemy.has_method(\"parried\"):
+					enemy.parried()
+				return true
+	return false
+
+func reset_parry_cooldown() -> void:
+	parry_cooldown_timer = 0.0
+
+func enable_torch():
+	torch_sprites.visible = true
+
+func disable_torch():
+	torch_sprites.visible = false
+
+func _on_torch_sprites_animation_finished() -> void:
+	if torch_sprites.animation in [\"Attack1\", \"Attack2\", \"Attack3\"]:
+		if attack_queued and combo_step < 3:
+			combo_step += 1
+			attack_queued = false
+			torch.end_attack()
+			hit_registered_this_swing = false
+			torch_sprites.play(\"Attack%d\" % combo_step)
+		else:
+			combo_step = 0
+			attack_queued = false
+			torch_sprites.play(\"Equip\")
+	elif torch_sprites.animation == \"Equip\":
+		update_torch_animation()
+
+func _on_torch_sprites_frame_changed() -> void:
+	if torch_pending_switch != \"\" and torch_sprites.frame == 0:
+		torch_sprites.play(torch_pending_switch)
+		torch_pending_switch = \"\"
+
+	# Hit-frame check for the attack combo. animation_finished only fires once
+	# a clip is fully done, so the actual mid-swing hit window has to be
+	# caught here instead, on whichever frame lands inside it.
+	var anim = torch_sprites.animation
+	torch.end_attack()
+	if anim in ATTACK_HIT_FRAMES and not hit_registered_this_swing:
+		var window: Vector2i = ATTACK_HIT_FRAMES[anim]
+		if torch_sprites.frame >= window.x and torch_sprites.frame <= window.y:
+			print(\"ATTACK WINDOW OPEN\")
+			torch.attack()
+			hit_registered_this_swing = true
+
+func update_torch_animation() -> void:
+	# Don't interrupt one-shot animations while they're still playing
+	if torch_sprites.is_playing() and torch_sprites.animation in [\"Attack1\", \"Attack2\", \"Attack3\", \"Equip\"]:
+		return
+
+	var horizontal_speed = Vector2(velocity.x, velocity.z).length()
+
+	if torch_sprites.animation == \"Run\":
+		if horizontal_speed <= STOP_ANIM_THRESHOLD:
+			torch_pending_switch = \"Idle\" # wait for Run to loop back to frame 0
+		else:
+			torch_pending_switch = \"\" # still moving — cancel any pending switch
+	else:
+		if horizontal_speed > RUN_ANIM_THRESHOLD:
+			torch_sprites.play(\"Run\")
+		elif torch_sprites.animation != \"Idle\":
+			torch_sprites.play(\"Idle\")
+
+func die() -> void:
+	disable_torch()
+
+	var tween = create_tween()
+	tween.set_ignore_time_scale(true)
+	tween.set_parallel(true)
+	tween.tween_property(Engine, \"time_scale\", 0.0, 0.5)
+	tween.tween_property(camera, \"rotation:z\", deg_to_rad(15), 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tween.tween_property(camera, \"position:y\", camera.position.y - 0.5, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	is_dead = true
+	tween.set_parallel(false)
+	await tween.finished
+
+	pause_menu.set_death_label(true)
+	pause_menu.pause()
+"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1pivh"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_1pivh"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_c83yi"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("14_c83yi")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_nyd3j")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_0gchq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_5w755")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_552og")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_giuho")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_gmm01")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_ott2s")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_ftehy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_ylvu8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_lustd")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_gbwas")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_ljkmv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_8k4al")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28_e0hkx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_xtit1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_151ft")
+}, {
+"duration": 1.0,
+"texture": ExtResource("31_274r3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("32_5e4ga")
+}, {
+"duration": 1.0,
+"texture": ExtResource("33_rntbp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("34_xw5nt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("35_rie18")
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}],
+"loop": 0,
+"name": &"Attack1",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("36_eycad")
+}, {
+"duration": 1.0,
+"texture": ExtResource("37_3t3b1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("38_dixlh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("39_pd0oe")
+}, {
+"duration": 1.0,
+"texture": ExtResource("40_dxcir")
+}, {
+"duration": 1.0,
+"texture": ExtResource("41_7rs8m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("42_7s2nw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("43_6kbb5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("44_0hblt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("45_o62sq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("46_jltdh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("47_30y2g")
+}, {
+"duration": 1.0,
+"texture": ExtResource("48_n4tw8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("49_cg4bv")
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}],
+"loop": 0,
+"name": &"Attack2",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("50_5xxh7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("51_5un75")
+}, {
+"duration": 1.0,
+"texture": ExtResource("52_v76sx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("53_dxncu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("54_tgi02")
+}, {
+"duration": 1.0,
+"texture": ExtResource("55_350sb")
+}, {
+"duration": 1.0,
+"texture": ExtResource("56_clpr6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("57_a8h1b")
+}, {
+"duration": 1.0,
+"texture": ExtResource("58_1yobx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("59_dugqs")
+}, {
+"duration": 1.0,
+"texture": ExtResource("60_opsut")
+}, {
+"duration": 1.0,
+"texture": ExtResource("61_kf2cg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("62_7oajy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("63_putmv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("64_42xjn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("65_lyvbx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("66_g3j25")
+}, {
+"duration": 1.0,
+"texture": ExtResource("67_conkd")
+}, {
+"duration": 1.0,
+"texture": ExtResource("68_8vg0g")
+}, {
+"duration": 1.0,
+"texture": ExtResource("69_ccrn4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("70_w6sri")
+}, {
+"duration": 1.0,
+"texture": ExtResource("71_glhg8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("72_sn7do")
+}, {
+"duration": 1.0,
+"texture": ExtResource("73_hr2my")
+}, {
+"duration": 1.0,
+"texture": ExtResource("74_eq8ts")
+}, {
+"duration": 1.0,
+"texture": ExtResource("75_80ubf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("76_wklt6")
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}, {
+"duration": 1.0,
+"texture": null
+}],
+"loop": 0,
+"name": &"Attack3",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("14_3vlem")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_8eeqe")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_5x828")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_c1k8q")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_e6mvm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_57lvd")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_ie7r7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_vq3lt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_pukcj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_1htnp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_m376e")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_6b312")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_lisdf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_n1x1j")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28_c8b32")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_nj1g2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_usbl8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("31_dtg1u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("32_nuaet")
+}, {
+"duration": 1.0,
+"texture": ExtResource("33_bqbau")
+}, {
+"duration": 1.0,
+"texture": ExtResource("34_f5f5t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("35_qvbpb")
+}, {
+"duration": 1.0,
+"texture": ExtResource("36_sscpr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("37_by7i4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("38_3uvy8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("39_ss172")
+}, {
+"duration": 1.0,
+"texture": ExtResource("40_jmelf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("41_bjdqd")
+}, {
+"duration": 1.0,
+"texture": ExtResource("42_feq18")
+}, {
+"duration": 1.0,
+"texture": ExtResource("43_wcnj3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("44_jsob3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("45_pg0gw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("46_qavoy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("47_w4w4b")
+}],
+"loop": 0,
+"name": &"Equip",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("111_j1njn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("112_1o6t6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("113_anjwu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("114_7f17t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("115_xb2p6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("116_m0wci")
+}, {
+"duration": 1.0,
+"texture": ExtResource("117_uquv7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("118_xirkt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("119_852nj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("120_a46fe")
+}, {
+"duration": 1.0,
+"texture": ExtResource("121_fgsmf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("122_sxb3n")
+}, {
+"duration": 1.0,
+"texture": ExtResource("123_lao3j")
+}, {
+"duration": 1.0,
+"texture": ExtResource("124_jhrtw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("125_5ca5e")
+}, {
+"duration": 1.0,
+"texture": ExtResource("126_sy4jq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("127_bwwr5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("128_opsnh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("129_jin74")
+}, {
+"duration": 1.0,
+"texture": ExtResource("130_6foxs")
+}],
+"loop": 1,
+"name": &"Idle",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("131_hyfd3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("132_sn352")
+}, {
+"duration": 1.0,
+"texture": ExtResource("133_1mxuw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("134_qobc4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("135_hd3oi")
+}, {
+"duration": 1.0,
+"texture": ExtResource("136_jdodw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("137_fx4up")
+}, {
+"duration": 1.0,
+"texture": ExtResource("138_hs564")
+}, {
+"duration": 1.0,
+"texture": ExtResource("139_73ytd")
+}, {
+"duration": 1.0,
+"texture": ExtResource("140_6j22i")
+}, {
+"duration": 1.0,
+"texture": ExtResource("141_fjcx3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("142_kule2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("143_rfrs5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("144_tay0l")
+}, {
+"duration": 1.0,
+"texture": ExtResource("145_lilql")
+}, {
+"duration": 1.0,
+"texture": ExtResource("146_las4e")
+}, {
+"duration": 1.0,
+"texture": ExtResource("147_s7tlt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("148_q3ije")
+}, {
+"duration": 1.0,
+"texture": ExtResource("149_hib1f")
+}, {
+"duration": 1.0,
+"texture": ExtResource("150_k2dtw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("151_3gds3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("152_1mfy4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("153_kxghe")
+}, {
+"duration": 1.0,
+"texture": ExtResource("154_cgoqe")
+}, {
+"duration": 1.0,
+"texture": ExtResource("155_avo2n")
+}, {
+"duration": 1.0,
+"texture": ExtResource("156_up6bw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("157_guu55")
+}, {
+"duration": 1.0,
+"texture": ExtResource("158_pkb4m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("159_mewyl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("160_xkv1o")
+}, {
+"duration": 1.0,
+"texture": ExtResource("161_tw6kh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("162_h1nam")
+}, {
+"duration": 1.0,
+"texture": ExtResource("163_uxvhu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("164_h5eni")
+}, {
+"duration": 1.0,
+"texture": ExtResource("165_jn6xu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("166_mwa7g")
+}, {
+"duration": 1.0,
+"texture": ExtResource("167_dcbrc")
+}],
+"loop": 1,
+"name": &"Run",
+"speed": 24.0
+}]
+
+[node name="Player" type="CharacterBody3D" unique_id=1067192018]
+script = SubResource("GDScript_1pivh")
+hit_sounds = Array[AudioStream]([ExtResource("1_ukyrk"), ExtResource("2_7dp3o"), ExtResource("3_h4iuc")])
+fireball_scene = ExtResource("4_fd4e3")
+
+[node name="PlayerCollision" type="CollisionShape3D" parent="." unique_id=789971662]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_1pivh")
+
+[node name="PlayerBody" type="MeshInstance3D" parent="." unique_id=1967276139]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+cast_shadow = 0
+mesh = SubResource("CapsuleMesh_1pivh")
+
+[node name="Head" type="Node3D" parent="." unique_id=224272224]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7796263, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head" unique_id=1346744861]
+
+[node name="Torch" parent="Head/Camera3D" unique_id=74443510 instance=ExtResource("5_qqcod")]
+visible = false
+
+[node name="Feet" type="Node3D" parent="." unique_id=2014408348]
+
+[node name="Jump" type="AudioStreamPlayer3D" parent="Feet" unique_id=545553289]
+stream = ExtResource("6_igrcy")
+volume_db = -24.546
+
+[node name="Footsteps" type="AudioStreamPlayer3D" parent="Feet" unique_id=1597714017]
+stream = ExtResource("6_igrcy")
+volume_db = -32.269
+
+[node name="Landing" type="AudioStreamPlayer3D" parent="Feet" unique_id=521195542]
+stream = ExtResource("7_fs7ks")
+volume_db = -23.755
+
+[node name="Dash" type="AudioStreamPlayer3D" parent="Feet" unique_id=1665252165]
+stream = ExtResource("8_l6n3p")
+volume_db = -21.053
+pitch_scale = 0.87
+
+[node name="Slam" type="AudioStreamPlayer3D" parent="Feet" unique_id=2009982655]
+stream = ExtResource("9_olqyp")
+volume_db = -21.053
+pitch_scale = 0.87
+
+[node name="HurtSFX" type="AudioStreamPlayer3D" parent="." unique_id=86331828]
+volume_db = -18.166
+pitch_scale = 0.91
+
+[node name="ImpactSFX" type="AudioStreamPlayer3D" parent="." unique_id=1167787260]
+stream = ExtResource("10_wpjfl")
+volume_db = -12.577
+pitch_scale = 0.91
+
+[node name="BurnSFX" type="AudioStreamPlayer3D" parent="." unique_id=157723479]
+stream = ExtResource("11_bi64h")
+volume_db = -2.096
+
+[node name="ParrySFX" type="AudioStreamPlayer3D" parent="." unique_id=75445710]
+stream = ExtResource("12_2ijsl")
+
+[node name="HealSFX" type="AudioStreamPlayer3D" parent="." unique_id=2009039814]
+stream = ExtResource("13_p1odr")
+volume_db = -35.634
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=100657060]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4712074, 0)
+light_energy = 3.408
+shadow_enabled = true
+omni_range = 48.473
+omni_attenuation = 0.888
+
+[node name="TorchSprites" type="AnimatedSprite2D" parent="." unique_id=1584832182]
+position = Vector2(960, 540)
+sprite_frames = SubResource("SpriteFrames_c83yi")
+animation = &"Attack3"
