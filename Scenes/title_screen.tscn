@@ -26,7 +26,7 @@ func _ready() -> void:
 	Engine.time_scale = 1.0
 
 func _process(delta: float) -> void:
-	myRotation -= 0.05
+	myRotation -= 5 * delta
 	if myRotation > 360:
 		myRotation = 0
 	rotation = Vector3(deg_to_rad(-20), deg_to_rad(myRotation), 0)
@@ -36,7 +36,7 @@ func _process(delta: float) -> void:
 resource_name = "FPSCounter"
 script/source = "extends Label
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	text = \"FPS: %d\" % Engine.get_frames_per_second()
 "
 
@@ -247,18 +247,6 @@ func _on_catacombs_pressed() -> void:
 
 [sub_resource type="GDScript" id="GDScript_klylv"]
 resource_name = "settings"
-script/source = "extends VBoxContainer
-
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-"
 
 [sub_resource type="GDScript" id="GDScript_0xyb7"]
 resource_name = "LevelSelector"

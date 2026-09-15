@@ -211,6 +211,10 @@ var head_bobbing_y_position = 0.0
 const BASE_FOV = 80
 const FOV_SPEED_BOOST = 1
 
+# Torch light energy range (varies with fire meter)
+const TORCH_ENERGY_MIN:float = 1.0 # at 0 fire
+const TORCH_ENERGY_MAX:float = 3.4 # at 100 fire
+
 @onready var head = $Head
 @onready var camera = $Head/Camera3D
 @onready var footsteps_sfx: AudioStreamPlayer3D = $Feet/Footsteps
@@ -233,6 +237,7 @@ const FOV_SPEED_BOOST = 1
 @onready var pause_menu: Control = $\"../UI/PauseMenu\"
 @onready var fire_bar: TextureProgressBar = $\"../FireBar/FireBar\"
 @onready var fire_vfx: GPUParticles2D = $\"../FireBar/Fire\"
+@onready var torch_light: OmniLight3D = $TorchLight
 
 @onready var torch_sprites: AnimatedSprite2D = $TorchSprites
 
@@ -268,7 +273,7 @@ const STOP_ANIM_THRESHOLD = 0.05  # horizontal speed below which Run is allowed 
 var torch_pending_switch: String = \"\" # animation name queued to play once Run hits frame 0
 
 var combo_step := 0        # 0 = not attacking, 1/2/3 = which attack is currently playing
-var attack_queued := false # true if the player clicked again during the current attack
+var queued_attacks := 0    # how many buffered clicks are waiting to advance the combo (0-2)
 
 # Frame windows (inclusive) during which each attack animation actually lands a hit.
 # Checked in _on_torch_sprites_frame_changed, which fires every frame the sprite
@@ -280,6 +285,10 @@ const ATTACK_HIT_FRAMES := {
 	\"Attack3\": Vector2i(9, 20),
 }
 var hit_registered_this_swing := false # prevents torch.attack() firing repeatedly while inside the window
+
+# One-shot torch_sprites animations that should never be interrupted by
+# update_torch_animation()'s Idle/Run logic while they're still playing.
+const ONE_SHOT_ANIMS := [\"Attack1\", \"Attack2\", \"Attack3\", \"Equip\", \"Parry\", \"Fireball\"]
 
 func _ready():
 	Engine.time_scale = 1.0
@@ -369,9 +378,10 @@ func _physics_process(delta: float) -> void:
 			combo_step = 1
 			hit_registered_this_swing = false
 			torch_sprites.play(\"Attack1\")
-		elif combo_step < 3:
-			# Mid-combo — buffer the next hit (only one queued at a time)
-			attack_queued = true
+		elif combo_step + queued_attacks < 3:
+			# Mid-combo — buffer this hit too, as long as there's still a
+			# combo step left for it to advance into (max Attack3).
+			queued_attacks += 1
 
 	if current_state == states.DASH:
 		dash_timer -= delta
@@ -389,7 +399,8 @@ func _physics_process(delta: float) -> void:
 	
 	# ================ PARRY ==================
 	if Input.is_action_just_pressed(\"Parry\") and _can_parry():
-		torch.attack(\"parry\")
+		#torch.attack(\"parry\")
+		torch_sprites.play(\"Parry\")
 		var success = _try_parry()
 		if not success:
 			parry_cooldown_timer = PARRY_COOLDOWN
@@ -402,7 +413,7 @@ func _physics_process(delta: float) -> void:
 		fire_bar.value -= 1
 		update_fire_vfx()
 	
-	if Input.is_action_just_pressed(\"Fireball\") and fireball_cooldown <= 0:
+	if Input.is_action_just_pressed(\"Fireball\") and fireball_cooldown <= 0 and combo_step == 0:
 		shoot_fireball()
 		fireball_cooldown = FIREBALL_COOLDOWN_TIME
 		
@@ -470,6 +481,8 @@ func _process(_delta):
 func update_fire_vfx():
 	var fire_percent = fire_bar.value / 100.0
 	var mat = fire_vfx.process_material
+
+	torch_light.light_energy = lerp(TORCH_ENERGY_MIN, TORCH_ENERGY_MAX, fire_percent)
 	
 	#fire_vfx.amount = int(lerp(5.0, 32.0, fire_percent))
 
@@ -575,6 +588,8 @@ func update_grapple_icon():
 		grapple_icon.visible = false
 	
 func shoot_fireball() -> void:
+	torch_sprites.play(\"Fireball\")
+
 	var fireball = fireball_scene.instantiate()
 	get_tree().current_scene.add_child(fireball)
 
@@ -613,6 +628,8 @@ func take_damage(amount: float, source) -> void:
 func _can_parry() -> bool:
 	if current_state == states.DASH or current_state == states.SLAM:
 		return false
+	if combo_step != 0:
+		return false # don't let Parry interrupt an in-progress attack
 	if torch.has_method(\"is_busy\") and torch.is_busy():
 		return false
 	if parry_cooldown_timer > 0.0:
@@ -645,18 +662,22 @@ func disable_torch():
 
 func _on_torch_sprites_animation_finished() -> void:
 	if torch_sprites.animation in [\"Attack1\", \"Attack2\", \"Attack3\"]:
-		if attack_queued and combo_step < 3:
+		if queued_attacks > 0 and combo_step < 3:
 			combo_step += 1
-			attack_queued = false
+			queued_attacks -= 1
 			torch.end_attack()
 			hit_registered_this_swing = false
 			torch_sprites.play(\"Attack%d\" % combo_step)
 		else:
 			combo_step = 0
-			attack_queued = false
+			queued_attacks = 0
 			torch_sprites.play(\"Equip\")
 	elif torch_sprites.animation == \"Equip\":
 		update_torch_animation()
+	elif torch_sprites.animation in [\"Parry\", \"Fireball\"]:
+		# Match the attack combo's behavior: go back through Equip first,
+		# and let Equip's own animation_finished hand off to Idle/Run.
+		torch_sprites.play(\"Equip\")
 
 func _on_torch_sprites_frame_changed() -> void:
 	if torch_pending_switch != \"\" and torch_sprites.frame == 0:
@@ -677,7 +698,7 @@ func _on_torch_sprites_frame_changed() -> void:
 
 func update_torch_animation() -> void:
 	# Don't interrupt one-shot animations while they're still playing
-	if torch_sprites.is_playing() and torch_sprites.animation in [\"Attack1\", \"Attack2\", \"Attack3\", \"Equip\"]:
+	if torch_sprites.is_playing() and torch_sprites.animation in ONE_SHOT_ANIMS:
 		return
 
 	var horizontal_speed = Vector2(velocity.x, velocity.z).length()
@@ -1113,6 +1134,20 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": ExtResource("62_7oajy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("62_7oajy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("62_7oajy")
+}],
+"loop": 0,
+"name": &"Fireball",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": ExtResource("111_j1njn")
 }, {
 "duration": 1.0,
@@ -1174,6 +1209,29 @@ animations = [{
 }],
 "loop": 1,
 "name": &"Idle",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("42_7s2nw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("42_7s2nw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("42_7s2nw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("42_7s2nw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("42_7s2nw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("42_7s2nw")
+}],
+"loop": 0,
+"name": &"Parry",
 "speed": 24.0
 }, {
 "frames": [{
@@ -1359,7 +1417,7 @@ stream = ExtResource("12_2ijsl")
 stream = ExtResource("13_p1odr")
 volume_db = -35.634
 
-[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=100657060]
+[node name="TorchLight" type="OmniLight3D" parent="." unique_id=100657060]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4712074, 0)
 light_energy = 3.408
 shadow_enabled = true
@@ -1369,4 +1427,4 @@ omni_attenuation = 0.888
 [node name="TorchSprites" type="AnimatedSprite2D" parent="." unique_id=1584832182]
 position = Vector2(960, 540)
 sprite_frames = SubResource("SpriteFrames_c83yi")
-animation = &"Attack3"
+animation = &"Fireball"

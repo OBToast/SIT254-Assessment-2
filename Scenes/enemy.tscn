@@ -52,7 +52,7 @@ anim_offset_max = 1.0
 [sub_resource type="QuadMesh" id="QuadMesh_4m2ty"]
 material = ExtResource("11_56vhr")
 
-[node name="Enemy" type="CharacterBody3D" unique_id=420250018 groups=["enemies"]]
+[node name="Enemy" type="CharacterBody3D" unique_id=420250018]
 script = ExtResource("1_287tu")
 hit_sounds = Array[AudioStream]([ExtResource("1_afpow"), ExtResource("2_287tu"), ExtResource("3_0830c")])
 dissolve_shader = ExtResource("5_po0sg")
@@ -79,10 +79,12 @@ volume_db = -11.878
 [node name="DamageSFX" type="AudioStreamPlayer3D" parent="." unique_id=396439228]
 stream = SubResource("AudioStreamMP3_ne65n")
 
-[node name="Sprite" type="AnimatedSprite3D" parent="." unique_id=1995870648]
+[node name="Sprite" type="AnimatedSprite3D" parent="." unique_id=1995870648 groups=["enemies"]]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0.24556807, 0)
+cast_shadow = 0
 modulate = Color(2.1928647, 18.892002, 18.892002, 1)
 billboard = 1
+shaded = true
 sprite_frames = ExtResource("7_8uf12")
 animation = &"die"
 frame = 2

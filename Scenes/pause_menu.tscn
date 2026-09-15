@@ -13,7 +13,7 @@ func _ready() -> void:
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	pass
 "
 
@@ -68,6 +68,33 @@ grow_vertical = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1771050708]
 layout_mode = 2
 
+[node name="LevelCompleteLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1569869731]
+process_mode = 3
+visible = false
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 109
+text = "LEVEL CLEARED"
+horizontal_alignment = 1
+
+[node name="Time" type="Label" parent="MarginContainer/VBoxContainer" unique_id=954797776]
+process_mode = 3
+visible = false
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Time:"
+horizontal_alignment = 1
+
+[node name="EnemiesCleared" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1575178789]
+process_mode = 3
+visible = false
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Enemies Cleared:"
+horizontal_alignment = 1
+
 [node name="DeathLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1724065397]
 process_mode = 3
 visible = false
@@ -75,6 +102,15 @@ custom_minimum_size = Vector2(0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 109
 text = "YOU DIED"
+horizontal_alignment = 1
+
+[node name="NextLevel" type="Button" parent="MarginContainer/VBoxContainer" unique_id=1129872597]
+process_mode = 3
+visible = false
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Next Level"
 
 [node name="Resume" type="Button" parent="MarginContainer/VBoxContainer" unique_id=716308538]
 process_mode = 3
@@ -270,6 +306,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 42
 text = "Quit"
 
+[connection signal="pressed" from="MarginContainer/VBoxContainer/NextLevel" to="." method="_on_next_level_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Resume" to="." method="_on_resume_pressed"]
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/SettingsContainer/Difficulty/Difficulty" to="." method="_on_difficulty_item_selected"]
 [connection signal="value_changed" from="MarginContainer/VBoxContainer/SettingsContainer/Volume/VolumeSlider" to="." method="_on_volume_slider_value_changed"]

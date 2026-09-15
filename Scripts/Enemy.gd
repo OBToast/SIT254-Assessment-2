@@ -116,8 +116,8 @@ func _on_attack_frame_changed() -> void:
 			get_tree().paused = true
 			while not Input.is_action_just_pressed("Parry"):
 				await get_tree().process_frame
-				parried()
 			get_tree().paused = false
+			parried()
 	elif frame == 3:
 		is_parryable = false
 
@@ -164,7 +164,7 @@ func _try_attack_player() -> void:
 		if result.collider.has_method("take_damage"):
 			result.collider.take_damage(attack_damage, "enemy")
 
-func take_damage(amount: int, source):
+func take_damage(amount: int, _source):
 	if is_dead:
 		return
 

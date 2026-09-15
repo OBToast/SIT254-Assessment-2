@@ -22,7 +22,7 @@ func _ready() -> void:
 	flash_material = StandardMaterial3D.new()
 	flash_material.albedo_color = Color.WHITE
 
-func take_damage(amount: int, source) -> void:
+func take_damage(amount: int, _source) -> void:
 	damage_particles.restart()
 	damage_particles.emitting = true
 
