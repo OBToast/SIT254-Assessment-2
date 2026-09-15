@@ -3711,7 +3711,7 @@ metadata/_custom_type_script = "uid://byrv03s3ddr0b"
 
 [sub_resource type="Resource" id="Resource_l4tcc"]
 script = ExtResource("7_5hb4g")
-text = "If I carried some hellfire, I reckon I could slip past. Holding raw hellfire for so long would incinerate my soul, though. I’ll need something to hold it in."
+text = "If I carried some hellfire, I reckon I could slip past. Holding raw hellfire for too long would incinerate my soul, though. I’ll need something to hold it in."
 display_lifetime = 10.0
 metadata/_custom_type_script = "uid://byrv03s3ddr0b"
 

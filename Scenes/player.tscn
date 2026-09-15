@@ -188,8 +188,10 @@ const AIR_CONTROL = 4.0 # Air control is measured in % per frame
 
 const DASH_SPEED = 25
 const DASH_DURATION = 0.15
+const DASH_COOLDOWN = 1.0 # seconds before another dash can be started
 
 var dash_timer = 0.0
+var dash_cooldown_timer = 0.0
 var dash_direction = Vector3.ZERO
 
 # Variable landing volume
@@ -211,7 +213,6 @@ var head_bobbing_y_position = 0.0
 const BASE_FOV = 80
 const FOV_SPEED_BOOST = 1
 
-# Torch light energy range (varies with fire meter)
 const TORCH_ENERGY_MIN:float = 1.0 # at 0 fire
 const TORCH_ENERGY_MAX:float = 3.4 # at 100 fire
 
@@ -268,17 +269,14 @@ var burn_damage_rate: float = 0.0    # fire_bar units drained per second
 const SETTINGS_FILE := \"user://settings.cfg\"
 var is_dead := false
 
-const RUN_ANIM_THRESHOLD = 3.0    # horizontal speed needed to switch torch sprite to Run
-const STOP_ANIM_THRESHOLD = 0.05  # horizontal speed below which Run is allowed to switch back to Idle
+const RUN_ANIM_THRESHOLD = 3.0   
+const STOP_ANIM_THRESHOLD = 0.05 
 var torch_pending_switch: String = \"\" # animation name queued to play once Run hits frame 0
 
-var combo_step := 0        # 0 = not attacking, 1/2/3 = which attack is currently playing
-var queued_attacks := 0    # how many buffered clicks are waiting to advance the combo (0-2)
+var combo_step := 0       
+var queued_attacks := 0   
 
 # Frame windows (inclusive) during which each attack animation actually lands a hit.
-# Checked in _on_torch_sprites_frame_changed, which fires every frame the sprite
-# advances — animation_finished only fires once the clip is already over, so it
-# can't be used to catch a mid-clip hit window.
 const ATTACK_HIT_FRAMES := {
 	\"Attack1\": Vector2i(17, 21),
 	\"Attack2\": Vector2i(8, 12),
@@ -337,6 +335,7 @@ func _physics_process(delta: float) -> void:
 	if is_dead:
 		return
 	parry_cooldown_timer = max(parry_cooldown_timer - delta, 0.0)
+	dash_cooldown_timer = max(dash_cooldown_timer - delta, 0.0)
 
 	if is_burning:
 		fire_bar.value -= burn_damage_rate * delta
@@ -360,24 +359,17 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector3(0,MAX_FALL_SPEED,0)
 
 	# ================ DASH ================ 
-	if Input.is_action_just_pressed(\"Dash\") and current_state != states.DASH and current_state != states.SLAM:
+	if Input.is_action_just_pressed(\"Dash\") and current_state != states.DASH and current_state != states.SLAM and dash_cooldown_timer <= 0.0:
 		start_dash()
 
 	# ================ ATTACK ==================
-	# NOTE: moved above the DASH-active block's early `return` below. Previously,
-	# an Attack press that landed during the ~0.15s dash window was silently
-	# dropped because the function returned before ever reaching this check —
-	# that's why attacks sometimes \"didn't play\" over idle/run. Attack input is
-	# now always evaluated each frame regardless of dash state. Parry is
-	# intentionally left where it was, since _can_parry() already blocks it
-	# during DASH/SLAM by design.
 	if Input.is_action_just_pressed(\"Attack\"):
 		print(\"Attack\", combo_step)
 		if combo_step == 0:
 			# Not currently attacking — start the combo fresh
 			combo_step = 1
 			hit_registered_this_swing = false
-			torch_sprites.play(\"Attack1\")
+			play_one_shot(\"Attack1\")
 		elif combo_step + queued_attacks < 3:
 			# Mid-combo — buffer this hit too, as long as there's still a
 			# combo step left for it to advance into (max Attack3).
@@ -400,7 +392,7 @@ func _physics_process(delta: float) -> void:
 	# ================ PARRY ==================
 	if Input.is_action_just_pressed(\"Parry\") and _can_parry():
 		#torch.attack(\"parry\")
-		torch_sprites.play(\"Parry\")
+		play_one_shot(\"Parry\")
 		var success = _try_parry()
 		if not success:
 			parry_cooldown_timer = PARRY_COOLDOWN
@@ -419,7 +411,6 @@ func _physics_process(delta: float) -> void:
 		
 
 	# ================ MOVEMENT ================ 
-	# Gravity + landing sfx
 	if not is_on_floor():
 		velocity += PLAYER_GRAVITY * delta
 		velocity.y = max(velocity.y, MAX_FALL_SPEED)
@@ -521,6 +512,7 @@ func start_dash() -> void:
 	dash_sfx.play()
 	current_state = states.DASH
 	dash_timer = DASH_DURATION
+	dash_cooldown_timer = DASH_COOLDOWN
 
 	var input_dir := Input.get_vector(\"Left\", \"Right\", \"Forward\", \"Back\")
 	var direction: Vector3 = (head.global_basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized()
@@ -588,7 +580,7 @@ func update_grapple_icon():
 		grapple_icon.visible = false
 	
 func shoot_fireball() -> void:
-	torch_sprites.play(\"Fireball\")
+	play_one_shot(\"Fireball\")
 
 	var fireball = fireball_scene.instantiate()
 	get_tree().current_scene.add_child(fireball)
@@ -660,6 +652,10 @@ func enable_torch():
 func disable_torch():
 	torch_sprites.visible = false
 
+func play_one_shot(anim_name: String) -> void:
+	torch_pending_switch = \"\"
+	torch_sprites.play(anim_name)
+
 func _on_torch_sprites_animation_finished() -> void:
 	if torch_sprites.animation in [\"Attack1\", \"Attack2\", \"Attack3\"]:
 		if queued_attacks > 0 and combo_step < 3:
@@ -667,34 +663,35 @@ func _on_torch_sprites_animation_finished() -> void:
 			queued_attacks -= 1
 			torch.end_attack()
 			hit_registered_this_swing = false
-			torch_sprites.play(\"Attack%d\" % combo_step)
+			play_one_shot(\"Attack%d\" % combo_step)
 		else:
 			combo_step = 0
 			queued_attacks = 0
-			torch_sprites.play(\"Equip\")
+			play_one_shot(\"Equip\")
 	elif torch_sprites.animation == \"Equip\":
 		update_torch_animation()
 	elif torch_sprites.animation in [\"Parry\", \"Fireball\"]:
-		# Match the attack combo's behavior: go back through Equip first,
-		# and let Equip's own animation_finished hand off to Idle/Run.
-		torch_sprites.play(\"Equip\")
+		play_one_shot(\"Equip\")
 
 func _on_torch_sprites_frame_changed() -> void:
-	if torch_pending_switch != \"\" and torch_sprites.frame == 0:
+
+	if torch_pending_switch != \"\" and torch_sprites.frame == 0 and torch_sprites.animation == \"Run\":
 		torch_sprites.play(torch_pending_switch)
 		torch_pending_switch = \"\"
-
-	# Hit-frame check for the attack combo. animation_finished only fires once
-	# a clip is fully done, so the actual mid-swing hit window has to be
-	# caught here instead, on whichever frame lands inside it.
 	var anim = torch_sprites.animation
-	torch.end_attack()
-	if anim in ATTACK_HIT_FRAMES and not hit_registered_this_swing:
+
+	var in_hit_window := false
+	if anim in ATTACK_HIT_FRAMES:
 		var window: Vector2i = ATTACK_HIT_FRAMES[anim]
-		if torch_sprites.frame >= window.x and torch_sprites.frame <= window.y:
-			print(\"ATTACK WINDOW OPEN\")
-			torch.attack()
-			hit_registered_this_swing = true
+		in_hit_window = torch_sprites.frame >= window.x and torch_sprites.frame <= window.y
+
+	if not in_hit_window:
+		torch.end_attack()
+
+	if in_hit_window and not hit_registered_this_swing:
+		print(\"ATTACK WINDOW OPEN\")
+		torch.attack()
+		hit_registered_this_swing = true
 
 func update_torch_animation() -> void:
 	# Don't interrupt one-shot animations while they're still playing
