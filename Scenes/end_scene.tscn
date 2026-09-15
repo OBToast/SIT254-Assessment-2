@@ -1,0 +1,219 @@
+[gd_scene format=3 uid="uid://b24h2cy541h40"]
+
+[ext_resource type="Shader" uid="uid://ji7oi6bx8ps5" path="res://Assets/Shaders/GameBoy.gdshader" id="1_5pkqa"]
+[ext_resource type="Texture2D" uid="uid://d376cac54ksvp" path="res://Assets/Textures/grapple.png" id="1_8p78e"]
+[ext_resource type="Texture2D" uid="uid://d3yat8ou17spr" path="res://Assets/Textures/crosshair.png" id="2_5rked"]
+[ext_resource type="PackedScene" uid="uid://ot1h486b3uwg" path="res://Scenes/pause_menu.tscn" id="4_20ln8"]
+[ext_resource type="Texture2D" uid="uid://dvx7p1sbw28kk" path="res://Assets/Textures/Group 5 - 5.png" id="5_foadp"]
+
+[sub_resource type="GDScript" id="GDScript_018oa"]
+resource_name = "EnableCrosshair"
+script/source = "extends CanvasLayer
+@onready var crosshair: TextureRect = $Crosshair
+
+@export var EnableCrosshair: bool = true
+
+func _ready() -> void:
+	crosshair.visible = EnableCrosshair
+"
+
+[sub_resource type="GDScript" id="GDScript_0xyb7"]
+resource_name = "FPSCounter"
+script/source = "extends Label
+
+func _process(_delta: float) -> void:
+	text = \"FPS: %d\" % Engine.get_frames_per_second()
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0xyb7"]
+shader = ExtResource("1_5pkqa")
+shader_parameter/color_one = Color(1, 1, 1, 1)
+shader_parameter/color_two = Color(0, 0, 0, 0)
+shader_parameter/number_of_colors = 10
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j7yey"]
+atlas = ExtResource("5_foadp")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_go4et"]
+atlas = ExtResource("5_foadp")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4memr"]
+atlas = ExtResource("5_foadp")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w5n7y"]
+atlas = ExtResource("5_foadp")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3h2h3"]
+atlas = ExtResource("5_foadp")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hejdp"]
+atlas = ExtResource("5_foadp")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k7w38"]
+atlas = ExtResource("5_foadp")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mghbe"]
+atlas = ExtResource("5_foadp")
+region = Rect2(224, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_0xyb7"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j7yey")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_go4et")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4memr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w5n7y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3h2h3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hejdp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k7w38")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mghbe")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 12.0
+}]
+
+[sub_resource type="GDScript" id="GDScript_1pivh"]
+resource_name = "EndScene"
+script/source = "extends MarginContainer
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	get_tree().paused = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+
+
+func _on_quit_to_menu_pressed() -> void:
+	get_tree().change_scene_to_file(
+		\"res://Scenes/title_screen.tscn\"
+	)
+
+
+func _on_quit_pressed() -> void:
+	get_tree().quit()
+"
+
+[node name="EndScene" type="Control" unique_id=196015485]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="UI2" type="CanvasLayer" parent="." unique_id=1113695544]
+script = SubResource("GDScript_018oa")
+EnableCrosshair = false
+
+[node name="GrappleIcon" type="Sprite2D" parent="UI2" unique_id=1182390742]
+visible = false
+position = Vector2(960, 540)
+texture = ExtResource("1_8p78e")
+
+[node name="FPSCounter" type="Label" parent="UI2" unique_id=85277302]
+offset_left = 6.0
+offset_top = 3.0
+offset_right = 46.0
+offset_bottom = 26.0
+script = SubResource("GDScript_0xyb7")
+
+[node name="GameBoyShader" type="ColorRect" parent="UI2" unique_id=1133099158]
+material = SubResource("ShaderMaterial_0xyb7")
+offset_right = 1963.0
+offset_bottom = 1116.0
+mouse_filter = 2
+
+[node name="Crosshair" type="TextureRect" parent="UI2" unique_id=2094210619]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_5rked")
+stretch_mode = 2
+
+[node name="PauseMenu" parent="UI2" unique_id=273598182 instance=ExtResource("4_20ln8")]
+disabled = true
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="UI2" unique_id=1182004334]
+visible = false
+position = Vector2(63.000008, 63)
+scale = Vector2(3.03125, 3)
+sprite_frames = SubResource("SpriteFrames_0xyb7")
+autoplay = "default"
+frame_progress = 0.21858719
+
+[node name="MarginContainer" type="MarginContainer" parent="UI2" unique_id=125010068]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -368.0
+offset_top = -258.5
+offset_right = 368.0
+offset_bottom = 258.5
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_1pivh")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI2/MarginContainer" unique_id=1293727309]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI2/MarginContainer/VBoxContainer" unique_id=735040025]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 64
+text = "Thanks for playing!
+That's all we've got for now.
+We hope you enjoyed!"
+horizontal_alignment = 1
+
+[node name="QuitToMenu" type="Button" parent="UI2/MarginContainer/VBoxContainer" unique_id=1813183748]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Quit To Menu"
+
+[node name="Quit" type="Button" parent="UI2/MarginContainer/VBoxContainer" unique_id=1966288703]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Quit"
+
+[connection signal="pressed" from="UI2/MarginContainer/VBoxContainer/QuitToMenu" to="UI2/MarginContainer" method="_on_quit_to_menu_pressed"]
+[connection signal="pressed" from="UI2/MarginContainer/VBoxContainer/Quit" to="UI2/MarginContainer" method="_on_quit_pressed"]

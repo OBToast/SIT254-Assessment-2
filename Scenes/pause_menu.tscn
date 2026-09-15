@@ -77,6 +77,15 @@ theme_override_font_sizes/font_size = 109
 text = "LEVEL CLEARED"
 horizontal_alignment = 1
 
+[node name="DifficultyBeatenOn" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1327091566]
+process_mode = 3
+visible = false
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Difficulty"
+horizontal_alignment = 1
+
 [node name="Time" type="Label" parent="MarginContainer/VBoxContainer" unique_id=954797776]
 process_mode = 3
 visible = false
@@ -84,6 +93,15 @@ custom_minimum_size = Vector2(0, 1)
 layout_mode = 2
 theme_override_font_sizes/font_size = 42
 text = "Time:"
+horizontal_alignment = 1
+
+[node name="BestTime" type="Label" parent="MarginContainer/VBoxContainer" unique_id=835642788]
+process_mode = 3
+visible = false
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Best Time:"
 horizontal_alignment = 1
 
 [node name="EnemiesCleared" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1575178789]

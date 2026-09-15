@@ -8,6 +8,7 @@
 [ext_resource type="Material" uid="uid://duin8kt0xm037" path="res://Assets/Materials/Tile.tres" id="8_x5ytc"]
 [ext_resource type="PackedScene" uid="uid://drnrkw0raiy5a" path="res://Scenes/fire_bar.tscn" id="9_0fj1v"]
 [ext_resource type="SpriteFrames" uid="uid://mqfr5c6m63vd" path="res://Assets/Enemies/Enemy1Walk.tres" id="9_ikia7"]
+[ext_resource type="PackedScene" uid="uid://ck8skyps5hcx1" path="res://Scenes/level_trigger.tscn" id="11_ikia7"]
 [ext_resource type="PackedScene" uid="uid://cfdbye6f6bqsu" path="res://Scenes/flame_shard.tscn" id="11_no8kt"]
 [ext_resource type="PackedScene" uid="uid://beudludnwujt4" path="res://Assets/Textures/hoggie2.glb" id="14_go4et"]
 
@@ -164,3 +165,9 @@ animation = &"attack"
 
 [node name="FireBar" parent="." unique_id=1779203842 instance=ExtResource("9_0fj1v")]
 position = Vector2(362, 259)
+
+[node name="LevelTrigger" parent="." unique_id=1774035424 instance=ExtResource("11_ikia7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.287935, 2.276845, 4.785298)
+SceneName = "res://Scenes/end_scene.tscn"
+
+[connection signal="body_entered" from="LevelTrigger" to="LevelTrigger" method="_on_body_entered"]

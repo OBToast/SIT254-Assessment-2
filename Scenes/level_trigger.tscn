@@ -6,14 +6,13 @@ script/source = "extends Area3D
 
 @export var SceneName: String = \"\"
 
+@onready var pause_menu: Control = $\"../UI/PauseMenu\"
+
 func _on_body_entered(body: Node3D) -> void:
 	if body.name == \"Player\":
-		if SceneName == \"\":
-			push_warning(\"SceneName is empty — nothing to load.\")
-			return
-		var err := get_tree().change_scene_to_file(SceneName)
-		if err != OK:
-			push_error(\"Failed to change scene to '%s' (error %d)\" % [SceneName, err])
+		pause_menu.set_level_complete(true)
+		pause_menu.next_level_path = SceneName
+		pause_menu.pause()
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_arqee"]

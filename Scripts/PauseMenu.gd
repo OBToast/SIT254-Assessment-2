@@ -18,6 +18,13 @@ extends Control
 @onready var time: Label = $MarginContainer/VBoxContainer/Time
 @onready var enemies_cleared: Label = $MarginContainer/VBoxContainer/EnemiesCleared
 @onready var next_level: Button = $MarginContainer/VBoxContainer/NextLevel
+@onready var best_time: Label = $MarginContainer/VBoxContainer/BestTime
+@onready var difficulty_beaten_on: Label = $MarginContainer/VBoxContainer/DifficultyBeatenOn
+
+@export var disabled: bool = false
+
+const BEST_TIMES_SECTION := "best_times"
+const DIFFICULTY_BEATEN_SECTION := "difficulty_beaten"
 
 var next_level_path: String = ""
 
@@ -150,14 +157,15 @@ func _physics_process(delta: float) -> void:
 		)
 
 	if Input.is_action_just_pressed("Escape"):
-		if get_tree().paused:
-			if player != null:
-				if player.is_dead != true:
+		if !disabled:
+			if get_tree().paused:
+				if player != null:
+					if player.is_dead != true:
+						unpause()
+				else:
 					unpause()
 			else:
-				unpause()
-		else:
-			pause()
+				pause()
 
 
 func pause():
@@ -177,6 +185,7 @@ func unpause():
 
 func save_settings() -> void:
 	var config := ConfigFile.new()
+	config.load(SETTINGS_FILE) # load existing data first so we don't wipe other sections
 
 	config.set_value(
 		"settings",
@@ -393,6 +402,8 @@ func set_level_complete(value: bool):
 	time.visible = value
 	enemies_cleared.visible = value
 	next_level.visible = value
+	best_time.visible = value
+	difficulty_beaten_on.visible = value
 
 	if value:
 		var elapsed_time := Time.get_ticks_msec() / 1000.0 - level_start_time
@@ -409,3 +420,71 @@ func set_level_complete(value: bool):
 			enemies_defeated,
 			total_enemies
 		]
+
+		# Best time
+		var current_best := get_best_time(difficulty_level)
+		var is_new_best := current_best < 0.0 or elapsed_time < current_best
+
+		if is_new_best:
+			save_best_time(difficulty_level, elapsed_time)
+			current_best = elapsed_time
+
+		var best_minutes := int(current_best) / 60
+		var best_seconds := int(current_best) % 60
+
+		best_time.text = "Best Time: %02d:%02d" % [best_minutes, best_seconds]
+		if is_new_best:
+			best_time.text += " (New Best!)"
+
+		# Difficulty beaten
+		var already_beaten := is_difficulty_beaten(difficulty_level)
+		mark_difficulty_beaten(difficulty_level)
+
+		difficulty_beaten_on.text = (
+			"First Clear on %s!" % difficulty_level
+			if not already_beaten
+			else "Difficulty Beaten: %s" % difficulty_level
+		)
+
+	if value:
+		var elapsed_time := Time.get_ticks_msec() / 1000.0 - level_start_time
+
+		var minutes := int(elapsed_time) / 60
+		var seconds := int(elapsed_time) % 60
+
+		time.text = "Time: %02d:%02d" % [minutes, seconds]
+
+		var enemies_remaining := get_tree().get_nodes_in_group("enemies").size()
+		var enemies_defeated := total_enemies - enemies_remaining
+
+		enemies_cleared.text = "Enemies Cleared: %d/%d" % [
+			enemies_defeated,
+			total_enemies
+		]
+
+func get_best_time(diff: String) -> float:
+	var config := ConfigFile.new()
+	if config.load(SETTINGS_FILE) != OK:
+		return -1.0
+	return config.get_value(BEST_TIMES_SECTION, diff, -1.0)
+
+
+func save_best_time(diff: String, time_seconds: float) -> void:
+	var config := ConfigFile.new()
+	config.load(SETTINGS_FILE) # ok if this fails, file may not exist yet
+	config.set_value(BEST_TIMES_SECTION, diff, time_seconds)
+	config.save(SETTINGS_FILE)
+
+
+func is_difficulty_beaten(diff: String) -> bool:
+	var config := ConfigFile.new()
+	if config.load(SETTINGS_FILE) != OK:
+		return false
+	return config.get_value(DIFFICULTY_BEATEN_SECTION, diff, false)
+
+
+func mark_difficulty_beaten(diff: String) -> void:
+	var config := ConfigFile.new()
+	config.load(SETTINGS_FILE)
+	config.set_value(DIFFICULTY_BEATEN_SECTION, diff, true)
+	config.save(SETTINGS_FILE)
