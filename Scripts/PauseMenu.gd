@@ -115,7 +115,7 @@ func _ready():
 	load_settings()
 
 	level_start_time = Time.get_ticks_msec() / 1000.0
-	total_enemies = get_tree().get_nodes_in_group("enemies").size()
+	total_enemies = get_tree().get_nodes_in_group("enemies").size()/2
 
 
 func move_toward_color(from: Color, to: Color, max_step: float) -> Color:
@@ -413,7 +413,7 @@ func set_level_complete(value: bool):
 
 		time.text = "Time: %02d:%02d" % [minutes, seconds]
 
-		var enemies_remaining := get_tree().get_nodes_in_group("enemies").size()
+		var enemies_remaining := get_tree().get_nodes_in_group("enemies").size()/2
 		var enemies_defeated := total_enemies - enemies_remaining
 
 		enemies_cleared.text = "Enemies Cleared: %d/%d" % [
@@ -446,33 +446,28 @@ func set_level_complete(value: bool):
 			else "Difficulty Beaten: %s" % difficulty_level
 		)
 
-	if value:
-		var elapsed_time := Time.get_ticks_msec() / 1000.0 - level_start_time
 
-		var minutes := int(elapsed_time) / 60
-		var seconds := int(elapsed_time) % 60
+func get_level_key() -> String:
+	var scene := get_tree().current_scene
+	if scene and not scene.scene_file_path.is_empty():
+		return scene.scene_file_path.get_file().get_basename()
+	push_warning("set_level_complete: could not resolve current_scene, falling back to 'unknown_level' for best-time/beaten tracking")
+	return "unknown_level"
 
-		time.text = "Time: %02d:%02d" % [minutes, seconds]
-
-		var enemies_remaining := get_tree().get_nodes_in_group("enemies").size()
-		var enemies_defeated := total_enemies - enemies_remaining
-
-		enemies_cleared.text = "Enemies Cleared: %d/%d" % [
-			enemies_defeated,
-			total_enemies
-		]
 
 func get_best_time(diff: String) -> float:
 	var config := ConfigFile.new()
 	if config.load(SETTINGS_FILE) != OK:
 		return -1.0
-	return config.get_value(BEST_TIMES_SECTION, diff, -1.0)
+	var key := "%s_%s" % [get_level_key(), diff]
+	return config.get_value(BEST_TIMES_SECTION, key, -1.0)
 
 
 func save_best_time(diff: String, time_seconds: float) -> void:
 	var config := ConfigFile.new()
-	config.load(SETTINGS_FILE) # ok if this fails, file may not exist yet
-	config.set_value(BEST_TIMES_SECTION, diff, time_seconds)
+	config.load(SETTINGS_FILE)
+	var key := "%s_%s" % [get_level_key(), diff]
+	config.set_value(BEST_TIMES_SECTION, key, time_seconds)
 	config.save(SETTINGS_FILE)
 
 
@@ -480,11 +475,13 @@ func is_difficulty_beaten(diff: String) -> bool:
 	var config := ConfigFile.new()
 	if config.load(SETTINGS_FILE) != OK:
 		return false
-	return config.get_value(DIFFICULTY_BEATEN_SECTION, diff, false)
+	var key := "%s_%s" % [get_level_key(), diff]
+	return config.get_value(DIFFICULTY_BEATEN_SECTION, key, false)
 
 
 func mark_difficulty_beaten(diff: String) -> void:
 	var config := ConfigFile.new()
 	config.load(SETTINGS_FILE)
-	config.set_value(DIFFICULTY_BEATEN_SECTION, diff, true)
+	var key := "%s_%s" % [get_level_key(), diff]
+	config.set_value(DIFFICULTY_BEATEN_SECTION, key, true)
 	config.save(SETTINGS_FILE)

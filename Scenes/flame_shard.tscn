@@ -33,7 +33,7 @@ func _on_body_entered(body: Node3D) -> void:
 	print(body.name)
 	velocity = Vector3.ZERO
 	if body.name == \"Player\":
-		body.take_damage(-20, \"shard\")
+		body.take_damage(-3.5, \"shard\")
 		queue_free()
 
 

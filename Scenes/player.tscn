@@ -266,6 +266,11 @@ const FIREBALL_COOLDOWN_TIME = 1.0
 var current_burn_time: float = 0.0   # counts down — how much longer the burn lasts
 var burn_damage_rate: float = 0.0    # fire_bar units drained per second
 
+@export var dash_cost: float = 1
+@export var slam_cost: float = 1
+@export var fireball_cost: float = 20
+@export var parry_cost: float = 15
+
 const SETTINGS_FILE := \"user://settings.cfg\"
 var is_dead := false
 
@@ -353,14 +358,17 @@ func _physics_process(delta: float) -> void:
 		get_tree().reload_current_scene()
 		
 	# ================ SLAM  ================ 
-	if Input.is_action_just_pressed(\"Slam\") and not is_on_floor() and current_state != states.SLAM:
+	if Input.is_action_just_pressed(\"Slam\") and not is_on_floor() and current_state != states.SLAM and fire_bar.value > slam_cost:
+		fire_bar.value -= slam_cost
 		current_state = states.SLAM
 		slam_sfx.play()
 		velocity = Vector3(0,MAX_FALL_SPEED,0)
 
 	# ================ DASH ================ 
-	if Input.is_action_just_pressed(\"Dash\") and current_state != states.DASH and current_state != states.SLAM and dash_cooldown_timer <= 0.0:
+	if Input.is_action_just_pressed(\"Dash\") and current_state != states.DASH and current_state != states.SLAM and dash_cooldown_timer <= 0.0 and fire_bar.value > dash_cost:
 		start_dash()
+		if torch_sprites.visible == true:
+			fire_bar.value -= dash_cost
 
 	# ================ ATTACK ==================
 	if Input.is_action_just_pressed(\"Attack\"):
@@ -390,22 +398,26 @@ func _physics_process(delta: float) -> void:
 		return
 	
 	# ================ PARRY ==================
-	if Input.is_action_just_pressed(\"Parry\") and _can_parry():
+	if Input.is_action_just_pressed(\"Parry\") and _can_parry() and fire_bar.value > parry_cost:
 		#torch.attack(\"parry\")
+		fire_bar.value -= parry_cost
 		play_one_shot(\"Parry\")
 		var success = _try_parry()
 		if not success:
 			parry_cooldown_timer = PARRY_COOLDOWN
 	
-	if Input.is_action_pressed(\"E\"):	
-		fire_bar.value += 1
-		update_fire_vfx()
+	if Input.is_action_pressed(\"E\"):
+		pass	
+		#fire_bar.value += 1
+		#update_fire_vfx()
 		
 	if Input.is_action_pressed(\"Q\"):
-		fire_bar.value -= 1
-		update_fire_vfx()
+		pass
+		#fire_bar.value -= 1
+		#update_fire_vfx()
 	
-	if Input.is_action_just_pressed(\"Fireball\") and fireball_cooldown <= 0 and combo_step == 0:
+	if Input.is_action_just_pressed(\"Fireball\") and fireball_cooldown <= 0 and combo_step == 0 and torch_sprites.visible == true and fire_bar.value > fireball_cost:
+		fire_bar.value -= fireball_cost
 		shoot_fireball()
 		fireball_cooldown = FIREBALL_COOLDOWN_TIME
 		
@@ -648,6 +660,7 @@ func reset_parry_cooldown() -> void:
 
 func enable_torch():
 	torch_sprites.visible = true
+	play_one_shot(\"Equip\")
 
 func disable_torch():
 	torch_sprites.visible = false

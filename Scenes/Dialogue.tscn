@@ -211,6 +211,11 @@ func start_dialogue(lines: Array[DialogueLine]) -> void:
 		# Left mid-conversation last time — just reappear exactly as it was
 		is_active = true
 		visible = true
+
+func set_type_speed(value: float):
+	chars_per_second = value
+	if value == 0:
+		chars_per_second = 9999999
 "
 
 [node name="DialogueManager" type="Control" unique_id=445563848]

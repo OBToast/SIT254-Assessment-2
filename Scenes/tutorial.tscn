@@ -3532,7 +3532,7 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_onpep")
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_lhlsl"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_w3ocs"]
 _surfaces = [{
 "aabb": AABB(-0.075283, -1.000867, -1.309571, 0.14990601, 2, 2.680214),
 "format": 34896613377,
@@ -3562,23 +3562,23 @@ _surfaces = [{
 "vertex_data": PackedByteArray("AAD+/5F9VNUAAAAAc/FU1QAAAACRfVTVAAAzGu/nVNUAAAAArwlU1QAA4UNt7VTVAAA0GjMTVNUAABiCyPFU1QAA4UO1DVTVAAA4rXXtVNUAAP7/beNU1QAAsFtUBFTVAAAYgloJVNUAALOgvwJU1QAAOK2sDVTVAACd2LcHVNUAAP//AABU1f//GtjXD1jV///+/5F9YNX/////YgVg1f//AACRfWDV//+6sVsSVtVOxn+62AhB1f//PYgIHGDV//9WbX8GYNX//8tGAxFg1f//ZSOMBWDV//8AALMCYNX/////YgX//wAA/v+Rff//AAD//wAA//////7/kX3//////v/A9f//AAD+/23j//8AAAAArwn/v///AACRff+///8AALMC/78AAAAAkX3/vwAAAABz8f+///8AAN/u/7//////YgX67gAAndi3B/ru//8a2NcP+e4AAP//AAD67gAAndi3Bx3rAAA4rawNHev//xrY1w8d607Gf7rYCB/nAAA4rawNH+f//7qxWxIf5///GtjXD3f3AAA4rawNd/dOxn+62Ah39wAAOK2sDcz2AACzoL8CzPb//7qxWxLM9gAAGIJaCZzZ//+6sVsSnNkAALOgvwKc2f//urFbEkfaAAAYgloJR9r//z2ICBxH2gAAsFtUBOz4//9WbX8G7PgAABiCWgns+P//Vm1/Bl7q//89iAgcXuoAABiCWgle6v//Vm1/Bp3yAADhQ7UNnfL//8tGAxGd8gAAsFtUBI7nAADhQ7UNjuf//1ZtfwaO5///ZSOMBRX7///LRgMRFfsAADQaMxMV+wAA4UO1Daj0AAA0GjMTqPT//8tGAxGo9AAAAACvCUj1//8AALMCSPUAADQaMxNI9f//AACzAg/g//9lI4wFD+AAADQaMxMP4P///v+RfTPV//8a2EvrmtX///7/wPVG1U7Gf7pK8g7V//+6scfou9T//z2IGt9G1f//y0Yf6kbV//9Wbf//RtX//wAAkX1G1f//AADf7kbV//9lI5b1RtXDLvbkavPc+wAAOK117dz7AAD+/23j3Pv//xrYS+sp+gAA/v9t4yn6///+/8D1KfrDLvbkavNUlf//GthL61SVAAA4rXXtVJVOxn+6SvI6uf//urHH6Dq5AAA4rXXtOrn//xrYS+txok7Gf7pK8nGiAAA4rXXtcaIAADitde057f//urHH6Dntxik4lmP4Oe0AABiCyPH07cYpOJZj+PTt//+6scfo9O3//7qxx+h1p///PYga33WnAAAYgsjxdadgMTJRQflVnQAAGILI8VWd//9Wbf//VZ3//1Zt//9W+AAAGILI8Vb4//89iBrfVvj//1Zt///Nnv//y0Yf6s2eAADhQ23tzZ5gMTJRQfkT/v//Vm3//xP+AADhQ23tE/7//2UjlvUsqAAAMxrv5yyo///LRh/qLKgAAOFDbe3+7///y0Yf6v7vAAAzGu/n/u8AAAAAc/GH/gAAMxrv54f+//8AAN/uh/7//wAA3+5fnQAAMxrv51+d//9lI5b1X53DLvbkavMF9QAA/v9t4wX1//8a2EvrBfXGKTiWY/hctQAAGILI8Vy1AAA4rXXtXLVgMTJRQfn1tQAA4UNt7fW1AAAYgsjx9bVVVaqqVVWqqlRVqqpVVaqqVVWqqlRVqapVVaqqVFWpqlVVqqpVVaqqVFWpqlRVqapUVamqVVWqqlVVqqpVVaqqVVWqqroqryqxKrMqsSqzKrEqsyq+Kq0q1yqgKrEqsyqxKrMqsSqzKrEqsyqxKrMq/78AAP9//7//vwAA/3//v/9//7//f/+/AAD/fwAA/38AAP9/AAD/fwAA/38AAACAt4LsEreC7BK1gusSuILuEjp8mww6fJsMOnybDH0as7Z9GrO2fRqztsvvqlDL76pQy++qUGaXSMdml0jHZpdIx3dkjRl3ZI0Zd2SNGYeFjxSHhY8Uh4WPFPH/qoDx/6qA8f+qgM1RngrNUZ4KzVGeChNt4iATbeIgE23iINRuASLUbgEi1G4BImjvB0to7wdLaO8HS5RrlxqUa5calGuXGkJlL85CZS/OQmUvzlp99fZaffX2Wn319rgqmCo9KtYqoiqkKuYqgSpLK08qoiqkKqIqpCqhKqQqoiqkKqIqpCqiKqQqC0lzhQtJc4ULSXOFsfJQ27HyUNux8lDb3mLtId5i7SHeYu0h8WT2UvFk9lLxZPZS6ZRsxumUbMbplGzGwh5rAMIeawDCHmsAlgEZypYBGcqWARnKzFy5GcxcuRnMXLkZwKdh6sCnYerAp2Hq5Sg8DuUoPA7lKDwOXEQbWVxEG1lcRBtZ8RgO1/EYDtfxGA7XTIsn0EyLJ9BMiyfQeQbI8HkGyPB5BsjwfxbZB38W2Qd/FtkHVGGC1lRhgtZUYYLW2KaQkdimkJHYppCRHZFJ9h2RSfYdkUn2CXmf8wl5n/MJeZ/z")
 }]
 blend_shape_mode = 0
-shadow_mesh = SubResource("ArrayMesh_lhlsl")
+shadow_mesh = SubResource("ArrayMesh_w3ocs")
 
-[sub_resource type="CurveTexture" id="CurveTexture_ofo01"]
+[sub_resource type="CurveTexture" id="CurveTexture_udn4x"]
 
 [sub_resource type="Curve" id="Curve_acrh7"]
 _limits = [0.0, 200.0, 0.0, 1.0]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 2
 
-[sub_resource type="CurveTexture" id="CurveTexture_213eo"]
+[sub_resource type="CurveTexture" id="CurveTexture_favtw"]
 curve = SubResource("Curve_acrh7")
 
 [sub_resource type="Curve" id="Curve_ma0ss"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.07651714, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -4.4406505, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="CurveTexture" id="CurveTexture_j8v3e"]
+[sub_resource type="CurveTexture" id="CurveTexture_ntxlb"]
 curve = SubResource("Curve_ma0ss")
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_bmrfs"]
@@ -3586,18 +3586,18 @@ spread = 180.0
 initial_velocity_min = 3.0
 initial_velocity_max = 9.0
 gravity = Vector3(0, -20, 0)
-scale_curve = SubResource("CurveTexture_j8v3e")
-alpha_curve = SubResource("CurveTexture_ofo01")
-anim_speed_curve = SubResource("CurveTexture_213eo")
+scale_curve = SubResource("CurveTexture_ntxlb")
+alpha_curve = SubResource("CurveTexture_udn4x")
+anim_speed_curve = SubResource("CurveTexture_favtw")
 anim_offset_max = 1.0
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4m2ty"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ldnol"]
 transparency = 1
 albedo_texture = ExtResource("68_5eib8")
 billboard_mode = 1
 
 [sub_resource type="QuadMesh" id="QuadMesh_3ongi"]
-material = SubResource("StandardMaterial3D_4m2ty")
+material = SubResource("StandardMaterial3D_ldnol")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_3ongi"]
 size = Vector3(1, 4.5746765, 4.6979065)
@@ -3723,7 +3723,7 @@ metadata/_custom_type_script = "uid://byrv03s3ddr0b"
 
 [sub_resource type="Resource" id="Resource_xlct6"]
 script = ExtResource("7_5hb4g")
-text = "[SHIFT TO DASH]"
+text = "[SHIFT TO DASH, COSTS 1 HELLFIRE]"
 display_lifetime = 2.0
 metadata/_custom_type_script = "uid://byrv03s3ddr0b"
 
@@ -3735,7 +3735,7 @@ metadata/_custom_type_script = "uid://byrv03s3ddr0b"
 
 [sub_resource type="Resource" id="Resource_5eib8"]
 script = ExtResource("7_5hb4g")
-text = "[JUMP -> CONTROL TO SLAM]"
+text = "[JUMP -> CONTROL TO SLAM, COSTS 1 HELLFIRE]"
 display_lifetime = 1.5
 metadata/_custom_type_script = "uid://byrv03s3ddr0b"
 
@@ -3753,7 +3753,7 @@ metadata/_custom_type_script = "uid://byrv03s3ddr0b"
 
 [sub_resource type="Resource" id="Resource_udn4x"]
 script = ExtResource("7_5hb4g")
-text = "[F TO PARRY]"
+text = "[F TO PARRY, COSTS 15 HELLFIRE]"
 display_lifetime = 2.0
 metadata/_custom_type_script = "uid://byrv03s3ddr0b"
 
@@ -3765,7 +3765,7 @@ metadata/_custom_type_script = "uid://byrv03s3ddr0b"
 
 [sub_resource type="Resource" id="Resource_ma0ss"]
 script = ExtResource("7_5hb4g")
-text = "[V FOR FIREBALL]"
+text = "[V FOR FIREBALL, COSTS 20 HELLFIRE]"
 display_lifetime = 3.0
 metadata/_custom_type_script = "uid://byrv03s3ddr0b"
 
@@ -5701,6 +5701,7 @@ dialogue_lines = Array[ExtResource("7_5hb4g")]([SubResource("Resource_ofo01"), S
 [node name="DialogueTrigger8" parent="." unique_id=1900559915 instance=ExtResource("1_m4j6x")]
 transform = Transform3D(-1.9337798, 0, -0.5103877, 0, 2, 0, 0.5103877, 0, -1.9337798, 22.350037, -59.074203, -350.7625)
 dialogue_lines = Array[ExtResource("7_5hb4g")]([SubResource("Resource_udn4x")])
+type_speed_override = 0.0
 
 [node name="DialogueTrigger10" parent="." unique_id=299392279 instance=ExtResource("1_m4j6x")]
 transform = Transform3D(-1.9337798, 0, -0.5103877, 0, 2, 0, 0.5103877, 0, -1.9337798, 47.25386, -59.074203, -371.01093)

@@ -7,6 +7,7 @@ script/source = "extends Area3D
 @export var dialogue_lines: Array[DialogueLine] = []
 @export var dialogue_controller_path: NodePath
 @export var trigger_once: bool = true
+@export var type_speed_override: float = -1
 
 var dialogue_controller: Control = null
 var has_triggered: bool = false
@@ -16,6 +17,8 @@ func _ready() -> void:
 	if dialogue_controller == null:
 		push_warning(\"dialogue_controller_path is not set or invalid.\")
 	body_entered.connect(_on_body_entered)
+	if type_speed_override >= 0:
+		dialogue_controller.set_type_speed(type_speed_override)
 
 func _on_body_entered(body: Node3D) -> void:
 	if trigger_once and has_triggered:

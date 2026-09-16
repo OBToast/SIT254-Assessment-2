@@ -34,6 +34,9 @@ var has_parried = false
 var dissolve_material: ShaderMaterial
 var dissolve_texture: NoiseTexture2D
 var death_animation_length = 3.0
+
+@export var detection_range: float = 100.0
+
 func _ready() -> void:
 	_setup_dissolve_texture()
 	shard_scene = preload("res://Scenes/flame_shard.tscn")
@@ -84,13 +87,17 @@ func _physics_process(delta: float) -> void:
 		_update_attack_visual_position()
 		velocity = Vector3.ZERO
 		move_and_slide()
-	else:
+	elif	 distance_to_player < detection_range:
 		# Chase
 		if sprite.animation != "walk":
 			sprite.play("walk")
 		nav_agent.set_target_position(player.global_position)
 		var next_nav_point = nav_agent.get_next_path_position()
 		velocity = (next_nav_point - global_position).normalized() * SPEED
+		move_and_slide()
+	else:
+		# Out of range — stay put
+		velocity = Vector3.ZERO
 		move_and_slide()
 
 func _face_player() -> void:
@@ -175,7 +182,7 @@ func take_damage(amount: int, _source):
 	hit_particles.emitting = true
 	health -= amount
 	if health <= 0:
-		emit_shards(5)
+		emit_shards(3)
 		die()
 		
 func emit_shards(amount):

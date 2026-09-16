@@ -52,10 +52,12 @@ anim_offset_max = 1.0
 [sub_resource type="QuadMesh" id="QuadMesh_4m2ty"]
 material = ExtResource("11_56vhr")
 
-[node name="Enemy" type="CharacterBody3D" unique_id=420250018]
+[node name="Enemy" type="CharacterBody3D" unique_id=420250018 groups=["enemies"]]
 script = ExtResource("1_287tu")
+health = 30
 hit_sounds = Array[AudioStream]([ExtResource("1_afpow"), ExtResource("2_287tu"), ExtResource("3_0830c")])
 dissolve_shader = ExtResource("5_po0sg")
+detection_range = 60.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1050010561]
 shape = SubResource("CapsuleShape3D_1pivh")
