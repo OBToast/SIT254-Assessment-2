@@ -95,7 +95,7 @@ frame_progress = 1.0
 [node name="DeathParticles" type="GPUParticles3D" parent="." unique_id=862172644]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.24695277, 0)
 emitting = false
-amount = 64
+amount = 20
 lifetime = 0.75
 explosiveness = 0.93
 process_material = SubResource("ParticleProcessMaterial_0xyb7")
@@ -104,7 +104,7 @@ draw_pass_1 = SubResource("QuadMesh_4m2ty")
 [node name="HitParticles" type="GPUParticles3D" parent="." unique_id=1258630738]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5535988, 0)
 emitting = false
-amount = 10
+amount = 5
 lifetime = 0.75
 explosiveness = 0.93
 process_material = SubResource("ParticleProcessMaterial_0xyb7")
