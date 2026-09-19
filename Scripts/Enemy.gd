@@ -15,7 +15,7 @@ const SPEED = 5.0
 @export var hit_sounds: Array[AudioStream] = []
 @onready var attack_sfx: AudioStreamPlayer3D = $AttackSFX
 @onready var collision_shape_3d: CollisionShape3D = $CollisionShape3D
-
+@export var parry_stun_length: float = 1.5
 @onready var attack_visual = $AttackVisual
 var flash_material: ShaderMaterial
 var time_since_hit: float = 1000.0
@@ -280,7 +280,7 @@ func parried() -> void:
 
 	emit_shards(3)
 
-	await get_tree().create_timer(1.2).timeout
+	await get_tree().create_timer(parry_stun_length).timeout
 
 	if is_dead:
 		return

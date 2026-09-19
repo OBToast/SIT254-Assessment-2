@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://ri0v5xt1wbxv" path="res://Assets/Textures/Cutscene/Highway man.png" id="1_7n648"]
 [ext_resource type="PackedScene" uid="uid://cpji30yhg1f0e" path="res://Scenes/Dialogue.tscn" id="2_vlwh7"]
 [ext_resource type="Script" uid="uid://byrv03s3ddr0b" path="res://Scripts/dialogue_line.gd" id="3_jd5kf"]
+[ext_resource type="Texture2D" uid="uid://duvrqfyb80b3" path="res://Assets/Textures/Cutscene/chef-pointing-knife-capable-hands-35029282.webp" id="4_a71v6"]
 [ext_resource type="Texture2D" uid="uid://dn3c7lbn5v0vl" path="res://Assets/Textures/Cutscene/images (1).jpg" id="4_eholo"]
 [ext_resource type="Texture2D" uid="uid://tr4qljjw0etq" path="res://Assets/Textures/Cutscene/Satan.png" id="4_j1a0j"]
 [ext_resource type="Texture2D" uid="uid://i68e10sdrsbq" path="res://Assets/Textures/Cutscene/images (7).jpg" id="5_018oa"]
@@ -19,11 +20,12 @@
 [ext_resource type="Texture2D" uid="uid://cfg76wy2d1b6y" path="res://Assets/Textures/Cutscene/images (6).jpg" id="15_018oa"]
 [ext_resource type="Texture2D" uid="uid://dpalxd14qdqac" path="res://Assets/Textures/Cutscene/how-many-times-has-peter-died-in-the-whole-show-im-curious-v0-f3uhjherw4g91.webp" id="17_a71v6"]
 [ext_resource type="PackedScene" uid="uid://ddrng036w3bp7" path="res://Scenes/ui.tscn" id="19_018oa"]
+[ext_resource type="AudioStream" uid="uid://bm2osi6bqeo0j" path="res://Assets/typerwriter.mp3" id="20_p2od8"]
 
 [sub_resource type="Resource" id="Resource_wbwiw"]
 script = ExtResource("3_jd5kf")
 text = "Ya know, the other day, some guy I got at knifepoint asks me, “how can you do this?” and I says “how could I not?”"
-image = ExtResource("1_7n648")
+image = ExtResource("4_a71v6")
 show_cutscene = true
 metadata/_custom_type_script = "uid://byrv03s3ddr0b"
 
@@ -153,6 +155,7 @@ fade_duration = 1.0
 load_tutorial_after = true
 next_scene = ExtResource("5_j6j7k")
 chars_per_second = 25.0
+typing_sfx = ExtResource("20_p2od8")
 
 [node name="UI" parent="." unique_id=1113695544 instance=ExtResource("19_018oa")]
 EnableCrosshair = false

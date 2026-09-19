@@ -47,7 +47,7 @@ static var mouse_sensitivity := 1.0
 const DIFFICULTIES := ["Easy", "Medium", "Hard"]
 static var difficulty_level := "Medium"
 
-@onready var player: CharacterBody3D = $"../../Player"
+var player: CharacterBody3D = null
 
 var level_start_time: float = 0.0
 var total_enemies: int = 0
@@ -100,7 +100,7 @@ func _on_pixelation_value_changed(value: float) -> void:
 
 func _on_difficulty_item_selected(index: int) -> void:
 	difficulty_level = difficulty.get_item_text(index)
-
+	save_settings()
 
 func _ready():
 	self.visible = false
@@ -116,6 +116,10 @@ func _ready():
 
 	level_start_time = Time.get_ticks_msec() / 1000.0
 	total_enemies = get_tree().get_nodes_in_group("enemies").size()/2
+
+	player = get_node_or_null("../../Player") as CharacterBody3D
+	if player == null:
+		push_warning("level_menu: could not find Player at '../../Player' — death-check on Escape will be skipped.")
 
 
 func move_toward_color(from: Color, to: Color, max_step: float) -> Color:
@@ -159,7 +163,7 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("Escape"):
 		if !disabled:
 			if get_tree().paused:
-				if player != null:
+				if is_instance_valid(player):
 					if player.is_dead != true:
 						unpause()
 				else:

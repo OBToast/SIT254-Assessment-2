@@ -4,6 +4,7 @@
 [ext_resource type="AudioStream" uid="uid://cl7aumsu6lchg" path="res://Assets/Audio/PlayerHurt3.mp3" id="2_7dp3o"]
 [ext_resource type="AudioStream" uid="uid://bpgu63gvn5ldr" path="res://Assets/Audio/PlayerHurt4.mp3" id="3_h4iuc"]
 [ext_resource type="PackedScene" uid="uid://bw13s4h5hsrsv" path="res://Scenes/fireball.tscn" id="4_fd4e3"]
+[ext_resource type="PackedScene" uid="uid://cpji30yhg1f0e" path="res://Scenes/Dialogue.tscn" id="5_0gchq"]
 [ext_resource type="PackedScene" uid="uid://bbym4e13vbn8q" path="res://Scenes/torch.tscn" id="5_qqcod"]
 [ext_resource type="AudioStream" uid="uid://bk6hddlmrik6d" path="res://Assets/Audio/Footstep.wav" id="6_igrcy"]
 [ext_resource type="AudioStream" uid="uid://cjtdiskr42o2b" path="res://Assets/Audio/Landing.wav" id="7_fs7ks"]
@@ -413,9 +414,10 @@ func _physics_process(delta: float) -> void:
 		return
 	
 	# ================ PARRY ==================
-	if Input.is_action_just_pressed(\"Parry\") and _can_parry() and fire_bar.value > parry_cost:
+	if Input.is_action_just_pressed(\"Parry\") and _can_parry():
 		#torch.attack(\"parry\")
-		fire_bar.value -= parry_cost
+		if fire_bar.value > parry_cost + 5:
+			fire_bar.value -= parry_cost
 		play_one_shot(\"Parry\")
 		var success = _try_parry()
 		if not success:
@@ -431,8 +433,9 @@ func _physics_process(delta: float) -> void:
 		#fire_bar.value -= 1
 		#update_fire_vfx()
 	
-	if Input.is_action_just_pressed(\"Fireball\") and fireball_cooldown <= 0 and combo_step == 0 and torch_sprites.visible == true and fire_bar.value > fireball_cost:
-		fire_bar.value -= fireball_cost
+	if Input.is_action_just_pressed(\"Fireball\") and fireball_cooldown <= 0 and combo_step == 0 and torch_sprites.visible == true:
+		if fire_bar.value > fireball_cost + 5:
+			fire_bar.value -= fireball_cost
 		shoot_fireball()
 		fireball_cooldown = FIREBALL_COOLDOWN_TIME
 		
@@ -665,6 +668,15 @@ func shoot_fireball() -> void:
 func take_damage(amount: float, source) -> void:
 	if source == \"torch\":
 		return # don't damage self
+	if source == \"fireball\":
+		if amount > fire_bar.value and fire_bar.value > 5: # save the player from killing themself with a fireball
+			fire_bar.value = 5
+		else:
+			fire_bar.value -= 5 # Half damage from fireballs
+		pause_menu.play_damage_visual()
+		hurt_sfx.stream = hit_sounds[randi() % hit_sounds.size()]
+		hurt_sfx.play()
+		return
 	if source != \"shard\":
 		pause_menu.play_damage_visual()
 		if not impact_sfx.playing:
@@ -1415,6 +1427,7 @@ animations = [{
 script = SubResource("GDScript_1pivh")
 hit_sounds = Array[AudioStream]([ExtResource("1_ukyrk"), ExtResource("2_7dp3o"), ExtResource("3_h4iuc")])
 fireball_scene = ExtResource("4_fd4e3")
+fireball_cost = 15.0
 
 [node name="PlayerCollision" type="CollisionShape3D" parent="." unique_id=789971662]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -1424,6 +1437,10 @@ shape = SubResource("CapsuleShape3D_1pivh")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 cast_shadow = 0
 mesh = SubResource("CapsuleMesh_1pivh")
+
+[node name="DialogueManager" parent="." unique_id=445563848 instance=ExtResource("5_0gchq")]
+enable_skip_prompt = false
+sfx_every_n_chars = 1
 
 [node name="Head" type="Node3D" parent="." unique_id=224272224]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7796263, 0)

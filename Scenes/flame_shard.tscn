@@ -6,25 +6,28 @@ script/source = "extends Node3D
 @export var rot_speed: float = 6
 @export var raise_amount: float = 0.25
 @export var bob_freq: float = 5.0
-var velocity: Vector3 = Vector3.ZERO
 @export var gravity: float = 10.0
+
+var velocity: Vector3 = Vector3.ZERO
 
 @onready var mesh_instance_3d: MeshInstance3D = $MeshInstance3D
 
-var start_y: float
+var mesh_start_y: float
 var time: float = 0.0
 
 func _ready() -> void:
-	start_y = position.y
+	mesh_start_y = mesh_instance_3d.position.y
+
 	var rng = RandomNumberGenerator.new()
-	mesh_instance_3d.transform.basis = mesh_instance_3d.transform.basis.rotated(Vector3.UP, rng.randf_range(0,2*PI))
-	time += rng.randf_range(0,10)
+	mesh_instance_3d.transform.basis = mesh_instance_3d.transform.basis.rotated(Vector3.UP, rng.randf_range(0, 2 * PI))
+	time += rng.randf_range(0, 10)
 
 func _process(delta: float) -> void:
 	time += delta
-	
+
 	mesh_instance_3d.transform.basis = mesh_instance_3d.transform.basis.rotated(Vector3.UP, rot_speed * delta)
-	mesh_instance_3d.position.y = start_y + cos(time * bob_freq) * raise_amount + 0.5 # ground offset
+	mesh_instance_3d.position.y = mesh_start_y + cos(time * bob_freq) * raise_amount
+
 	if velocity != Vector3.ZERO:
 		velocity.y -= gravity * delta
 		global_position += velocity * delta
@@ -33,9 +36,8 @@ func _on_body_entered(body: Node3D) -> void:
 	print(body.name)
 	velocity = Vector3.ZERO
 	if body.name == \"Player\":
-		body.take_damage(-3.5, \"shard\")
+		body.take_damage(-5, \"shard\")
 		queue_free()
-
 
 func _on_vacuum_area_body_entered(body: Node3D) -> void:
 	pass # Replace with function body.

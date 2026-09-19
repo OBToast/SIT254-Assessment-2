@@ -56,6 +56,7 @@ material = ExtResource("11_56vhr")
 script = ExtResource("1_287tu")
 health = 30
 hit_sounds = Array[AudioStream]([ExtResource("1_afpow"), ExtResource("2_287tu"), ExtResource("3_0830c")])
+parry_stun_length = 1.8
 dissolve_shader = ExtResource("5_po0sg")
 detection_range = 60.0
 

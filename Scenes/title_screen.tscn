@@ -106,6 +106,7 @@ func _on_pixelation_value_changed(value: float) -> void:
 
 func _on_difficulty_item_selected(index: int) -> void:
 	difficulty_level = difficulty.get_item_text(index)
+	save_settings()
 
 func _ready():
 	if difficulty.item_count == 0:
@@ -452,14 +453,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 28
 alignment = 1
-selected = 0
-item_count = 3
-popup/item_0/text = "Easy"
-popup/item_0/id = 0
-popup/item_1/text = "Medium"
-popup/item_1/id = 1
-popup/item_2/text = "Hard"
-popup/item_2/id = 2
 
 [node name="Volume" type="HBoxContainer" parent="UI/StartMenu/MarginContainer/VBoxContainer/SettingsContainer" unique_id=729649156]
 layout_mode = 2
