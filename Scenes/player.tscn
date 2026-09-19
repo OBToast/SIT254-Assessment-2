@@ -131,6 +131,7 @@
 [ext_resource type="Texture2D" uid="uid://tqpilw55f7jh" path="res://Assets/Animations/Idle/Idle00086445.png" id="129_jin74"]
 [ext_resource type="Texture2D" uid="uid://bh73wsu4vn5oo" path="res://Assets/Animations/Idle/Idle00086446.png" id="130_6foxs"]
 [ext_resource type="Texture2D" uid="uid://cty32n1eiiy7i" path="res://Assets/Animations/Run/Run00086446.png" id="131_hyfd3"]
+[ext_resource type="Texture2D" uid="uid://cmlrj81st7h1v" path="res://Assets/Textures/Parry2.png" id="131_nyd3j"]
 [ext_resource type="Texture2D" uid="uid://bakq26s38o71" path="res://Assets/Animations/Run/Run00086447.png" id="132_sn352"]
 [ext_resource type="Texture2D" uid="uid://x0runtdu3yua" path="res://Assets/Animations/Run/Run00086448.png" id="133_1mxuw"]
 [ext_resource type="Texture2D" uid="uid://ccakx8b28ha47" path="res://Assets/Animations/Run/Run00086449.png" id="134_qobc4"]
@@ -172,7 +173,7 @@
 resource_name = "Player"
 script/source = "extends CharacterBody3D
 
-enum states {GROUND, AIR, SLAM, DASH}
+enum states {GROUND, AIR, SLAM, DASH, NOCLIP}
 var current_state: states = states.GROUND
 
 const WALK_SPEED = 18
@@ -193,6 +194,12 @@ const DASH_COOLDOWN = 1.0 # seconds before another dash can be started
 var dash_timer = 0.0
 var dash_cooldown_timer = 0.0
 var dash_direction = Vector3.ZERO
+
+# Noclip
+const NOCLIP_SPEED = 15.0
+const NOCLIP_SPRINT_SPEED = 50.0
+var noclip_prev_collision_layer: int = 0
+var noclip_prev_collision_mask: int = 0
 
 # Variable landing volume
 const LANDING_SFX_MIN_VELOCITY = 5
@@ -342,6 +349,20 @@ func _physics_process(delta: float) -> void:
 	parry_cooldown_timer = max(parry_cooldown_timer - delta, 0.0)
 	dash_cooldown_timer = max(dash_cooldown_timer - delta, 0.0)
 
+	# Restart
+	if Input.is_action_just_pressed(\"Restart\"):
+		get_tree().paused = false
+		Engine.time_scale = 1.0
+		get_tree().reload_current_scene()
+
+	# ================ NOCLIP ================
+	if Input.is_action_just_pressed(\"Noclip\"):
+		toggle_noclip()
+
+	if current_state == states.NOCLIP:
+		process_noclip(delta)
+		return
+
 	if is_burning:
 		fire_bar.value -= burn_damage_rate * delta
 		update_fire_vfx()
@@ -350,12 +371,6 @@ func _physics_process(delta: float) -> void:
 			current_burn_time = 0.0
 			is_burning = false
 			die()
-
-	# Restart
-	if Input.is_action_just_pressed(\"Restart\"):
-		get_tree().paused = false
-		Engine.time_scale = 1.0
-		get_tree().reload_current_scene()
 		
 	# ================ SLAM  ================ 
 	if Input.is_action_just_pressed(\"Slam\") and not is_on_floor() and current_state != states.SLAM and fire_bar.value > slam_cost:
@@ -537,6 +552,41 @@ func start_dash() -> void:
 
 	dash_direction = direction
 	velocity = dash_direction * DASH_SPEED
+
+func toggle_noclip() -> void:
+	if current_state == states.NOCLIP:
+		# Turning noclip off — restore collision and let physics take over next frame
+		set_collision_layer(noclip_prev_collision_layer)
+		set_collision_mask(noclip_prev_collision_mask)
+		current_state = states.AIR
+		velocity = Vector3.ZERO
+	else:
+		# Turning noclip on — remember collision so we can restore it, then disable it
+		noclip_prev_collision_layer = collision_layer
+		noclip_prev_collision_mask = collision_mask
+		set_collision_layer(0)
+		set_collision_mask(0)
+		current_state = states.NOCLIP
+		velocity = Vector3.ZERO
+
+func process_noclip(delta: float) -> void:
+	var input_dir := Input.get_vector(\"Left\", \"Right\", \"Forward\", \"Back\")
+
+	# Forward/back/strafe follow the camera's full look direction, pitch included,
+	# so looking up and pressing Forward flies you upward — Garry's Mod style.
+	var move_dir: Vector3 = camera.global_basis * Vector3(input_dir.x, 0.0, input_dir.y)
+
+	# Explicit vertical control independent of where you're looking
+	if Input.is_action_pressed(\"Jump\"):
+		move_dir.y += 1.0
+	if Input.is_action_pressed(\"Q\"):
+		move_dir.y -= 1.0
+
+	if move_dir.length() > 0.0:
+		move_dir = move_dir.normalized()
+
+	var noclip_speed = NOCLIP_SPRINT_SPEED if Input.is_action_pressed(\"Dash\") else NOCLIP_SPEED
+	global_position += move_dir * noclip_speed * delta
 
 func find_best_target() -> Node3D:
 	var viewport_size = get_viewport().get_visible_rect().size
@@ -1223,22 +1273,22 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("42_7s2nw")
+"texture": ExtResource("131_nyd3j")
 }, {
 "duration": 1.0,
-"texture": ExtResource("42_7s2nw")
+"texture": ExtResource("131_nyd3j")
 }, {
 "duration": 1.0,
-"texture": ExtResource("42_7s2nw")
+"texture": ExtResource("131_nyd3j")
 }, {
 "duration": 1.0,
-"texture": ExtResource("42_7s2nw")
+"texture": ExtResource("131_nyd3j")
 }, {
 "duration": 1.0,
-"texture": ExtResource("42_7s2nw")
+"texture": ExtResource("131_nyd3j")
 }, {
 "duration": 1.0,
-"texture": ExtResource("42_7s2nw")
+"texture": ExtResource("131_nyd3j")
 }],
 "loop": 0,
 "name": &"Parry",
@@ -1435,6 +1485,7 @@ omni_range = 48.473
 omni_attenuation = 0.888
 
 [node name="TorchSprites" type="AnimatedSprite2D" parent="." unique_id=1584832182]
-position = Vector2(960, 540)
+position = Vector2(959, 540)
+scale = Vector2(0.99921876, 1)
 sprite_frames = SubResource("SpriteFrames_c83yi")
-animation = &"Fireball"
+animation = &"Parry"
