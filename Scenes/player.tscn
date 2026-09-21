@@ -301,6 +301,9 @@ var hit_registered_this_swing := false # prevents torch.attack() firing repeated
 # update_torch_animation()'s Idle/Run logic while they're still playing.
 const ONE_SHOT_ANIMS := [\"Attack1\", \"Attack2\", \"Attack3\", \"Equip\", \"Parry\", \"Fireball\"]
 
+const COYOTE_TIME = 0.25 # seconds you can still jump after leaving the ground
+var coyote_timer = 0.0
+
 func _ready():
 	Engine.time_scale = 1.0
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -415,7 +418,12 @@ func _physics_process(delta: float) -> void:
 	
 	# ================ PARRY ==================
 	if Input.is_action_just_pressed(\"Parry\") and _can_parry():
-		#torch.attack(\"parry\")
+		# Cancel an in-progress attack combo
+		if combo_step != 0:
+			combo_step = 0
+			queued_attacks = 0
+			hit_registered_this_swing = false
+			torch.end_attack() # make sure any active hitbox is closed immediately
 		if fire_bar.value > parry_cost + 5:
 			fire_bar.value -= parry_cost
 		play_one_shot(\"Parry\")
@@ -444,10 +452,10 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity += PLAYER_GRAVITY * delta
 		velocity.y = max(velocity.y, MAX_FALL_SPEED)
-		# Store the fastest downward speed
 		fall_velocity = min(velocity.y, fall_velocity)
 		if current_state != states.SLAM:
 			current_state = states.AIR
+		coyote_timer = max(coyote_timer - delta, 0.0)
 	else:
 		if current_state == states.AIR or current_state == states.SLAM:
 			print(\"Fall speed:\", fall_velocity)
@@ -456,11 +464,13 @@ func _physics_process(delta: float) -> void:
 			landing_sfx.play()
 			fall_velocity = 0.0
 		current_state = states.GROUND
+		coyote_timer = COYOTE_TIME
 
 	# Jump
-	if Input.is_action_just_pressed(\"Jump\") and is_on_floor():
+	if Input.is_action_just_pressed(\"Jump\") and (is_on_floor() or coyote_timer > 0.0):
 		velocity.y = JUMP_VELOCITY
 		jump_sfx.play()
+		coyote_timer = 0.0
 	
 	var input_dir := Input.get_vector(\"Left\", \"Right\", \"Forward\", \"Back\")
 	var direction: Vector3 = (head.global_basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized()
@@ -694,8 +704,6 @@ func take_damage(amount: float, source) -> void:
 func _can_parry() -> bool:
 	if current_state == states.DASH or current_state == states.SLAM:
 		return false
-	if combo_step != 0:
-		return false # don't let Parry interrupt an in-progress attack
 	if torch.has_method(\"is_busy\") and torch.is_busy():
 		return false
 	if parry_cooldown_timer > 0.0:

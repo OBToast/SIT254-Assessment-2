@@ -206,6 +206,7 @@ radius = 0.3947418
 [node name="Area3D" type="Area3D" unique_id=246577747]
 collision_layer = 3
 script = SubResource("GDScript_xi7wk")
+damage = 20.0
 
 [node name="PassingSFX" type="AudioStreamPlayer3D" parent="." unique_id=2028774391]
 stream = ExtResource("1_ne4qj")

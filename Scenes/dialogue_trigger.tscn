@@ -5,63 +5,122 @@ resource_name = "DialogueTrigger"
 script/source = "extends Area3D
 
 @export var dialogue_lines: Array[DialogueLine] = []
-@export var dialogue_controller_path: NodePath  # optional manual override
+@export var dialogue_controller_path: NodePath
 @export var trigger_once: bool = true
 @export var type_speed_override: float = -1
+
+# Dialogue trigger that must have already been triggered
+@export var prerequisite_trigger_path: NodePath
+
+# Dialogue trigger that prevents this dialogue from playing if it has already played
+@export var blocking_trigger_path: NodePath
+
+# Optional node to make visible once this dialogue starts
+@export var reveal_node_path: NodePath
 
 const DIALOGUE_GROUP := \"dialogue_controller\"
 
 var dialogue_controller: Control = null
 var has_triggered: bool = false
 
+
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 
-	# If a path was explicitly set, honor it immediately.
 	if dialogue_controller_path != NodePath(\"\"):
 		dialogue_controller = get_node_or_null(dialogue_controller_path)
+
 		if dialogue_controller == null:
 			push_warning(\"dialogue_controller_path is set but invalid — will fall back to auto-find.\")
+
 
 func _on_body_entered(body: Node3D) -> void:
 	if trigger_once and has_triggered:
 		return
+
 	if body.name != \"Player\":
 		return
 
+	# Check prerequisite dialogue trigger
+	if prerequisite_trigger_path != NodePath(\"\"):
+		var prerequisite = get_node_or_null(prerequisite_trigger_path)
+
+		if prerequisite == null:
+			push_warning(\"prerequisite_trigger_path is set but invalid.\")
+			return
+
+		if not prerequisite.has_played():
+			return
+
+	# Check blocking dialogue trigger
+	if blocking_trigger_path != NodePath(\"\"):
+		var blocking_trigger = get_node_or_null(blocking_trigger_path)
+
+		if blocking_trigger == null:
+			push_warning(\"blocking_trigger_path is set but invalid.\")
+			return
+
+		if blocking_trigger.has_played():
+			return
+
+	# Find dialogue controller
 	if dialogue_controller == null:
 		dialogue_controller = _find_dialogue_controller(body)
 
 	if dialogue_controller == null:
-		push_warning(\"Could not find a dialogue controller (checked path, group '%s', and body '%s').\" % [DIALOGUE_GROUP, body.name])
+		push_warning(
+			\"Could not find a dialogue controller (checked path, group '%s', and body '%s').\"
+			% [DIALOGUE_GROUP, body.name]
+		)
 		return
 
 	dialogue_controller.set_type_speed(type_speed_override)
+
+	# Mark as triggered before starting dialogue
 	has_triggered = true
+
+	# Start the dialogue
 	dialogue_controller.start_dialogue(dialogue_lines)
 
+	# Reveal node immediately when dialogue starts
+	if reveal_node_path != NodePath(\"\"):
+		var reveal_node := get_node_or_null(reveal_node_path)
+
+		if reveal_node == null:
+			push_warning(\"reveal_node_path is set but invalid.\")
+		else:
+			reveal_node.visible = true
+
+
 func _find_dialogue_controller(body: Node3D) -> Control:
-	# 1. Look inside the body that triggered us first — covers the case where
-	#    the dialogue controller is nested inside the player scene.
 	var found := _find_in_group_within(body, DIALOGUE_GROUP)
+
 	if found != null:
 		return found as Control
 
-	# 2. Fall back to a scene-wide group search.
 	var global_match := get_tree().get_first_node_in_group(DIALOGUE_GROUP)
+
 	if global_match != null:
 		return global_match as Control
 
 	return null
 
+
 func _find_in_group_within(root: Node, group: String) -> Node:
 	if root.is_in_group(group):
 		return root
+
 	for child in root.get_children():
 		var result := _find_in_group_within(child, group)
+
 		if result != null:
 			return result
+
 	return null
+
+
+func has_played() -> bool:
+	return has_triggered
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_3ongi"]

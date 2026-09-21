@@ -3479,7 +3479,7 @@ scale_max = 0.19999999
 color_ramp = SubResource("GradientTexture1D_036b0")
 
 [sub_resource type="QuadMesh" id="QuadMesh_ollfv"]
-size = Vector2(0.4, 0.4)
+size = Vector2(2, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1pivh"]
 size = Vector3(1.4448242, 1.3983154, 1.4433594)
@@ -3697,8 +3697,9 @@ size = Vector3(0.61572266, 2.138855, 0.6333618)
 
 [sub_resource type="Resource" id="Resource_m4j6x"]
 script = ExtResource("7_5hb4g")
-text = "This lantern 'll do."
-display_lifetime = 3.0
+text = "This lantern 'll do, the hellfire inside will burn down over time though.
+[CONSUMES HELLFIRE PER SECOND]"
+display_lifetime = 7.0
 metadata/_custom_type_script = "uid://byrv03s3ddr0b"
 
 [sub_resource type="Resource" id="Resource_e2jh5"]
@@ -3802,6 +3803,9 @@ size = Vector3(100, 100, 1)
 [sub_resource type="BoxShape3D" id="BoxShape3D_x0eg5"]
 size = Vector3(100, 100, 29.685059)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_favtw"]
+size = Vector3(19.903564, 100, 3.345642)
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_w5prs"]
 size = Vector3(116.188965, 100, 4.355957)
 
@@ -3838,6 +3842,7 @@ script/source = "extends Area3D
 @onready var rightgate: Node3D = $\"../BluestonewallGate/Gate/Right/RIGHTGATE\"
 @onready var leftgate: Node3D = $\"../BluestonewallGate/Gate/Left/LEFTGATE\"
 @onready var gpu_particles_3d: GPUParticles3D = $\"../GPUParticles3D\"
+@onready var dialogue_trigger_3: Area3D = $\"../DialogueTrigger3\"
 
 
 func _ready() -> void:
@@ -3849,17 +3854,17 @@ func _ready() -> void:
 func _on_body_entered(body: Node3D) -> void:
 	if body.name != \"Player\":
 		return
+	if dialogue_trigger_3.has_played() == true:
+		fire_bar.visible = true
+		player.enable_torch()
+		lantern.visible = false
+		omni_light_3d.visible = false
+		gate_collider.disabled = true
 
-	fire_bar.visible = true
-	player.enable_torch()
-	lantern.visible = false
-	omni_light_3d.visible = false
-	gate_collider.disabled = true
-
-	leftgate.rotation_degrees.y = 140
-	rightgate.rotation_degrees.y = -120
-	gpu_particles_3d.emitting = false
-	player.is_burning = true
+		leftgate.rotation_degrees.y = 140
+		rightgate.rotation_degrees.y = -120
+		gpu_particles_3d.emitting = false
+		player.is_burning = true
 "
 
 [sub_resource type="PointMesh" id="PointMesh_1pivh"]
@@ -4421,7 +4426,19 @@ transform = Transform3D(5.5848503, -0.35516196, -2.1640947, 0.3311684, 5.9894786
 transform = Transform3D(1.9246227, 0, 4.6147404, 0, 5, 0, -4.6147404, 0, 1.9246227, 26.014029, -3.048586, -82.944756)
 
 [node name="Rock_20" parent="." unique_id=668230002 instance=ExtResource("35_bhnj3")]
-transform = Transform3D(1.5881805, 0, -2.5451293, 0, 3, 0, 2.5451293, 0, 1.5881805, 19.450996, -2.502332, -60.38923)
+transform = Transform3D(1.5881805, 0, -2.5451293, 0, 3, 0, 2.5451293, 0, 1.5881805, 13.655666, -2.502332, -64.2867)
+
+[node name="Rock_56" parent="." unique_id=1299744473 instance=ExtResource("35_bhnj3")]
+transform = Transform3D(-0.25678575, 0, -2.9889898, 0, 2.9999998, 0, 2.9889898, 0, -0.25678575, 18.2461, -2.5761044, -66.91933)
+
+[node name="Rock_57" parent="." unique_id=451744953 instance=ExtResource("35_bhnj3")]
+transform = Transform3D(-0.25678575, 0, -2.9889898, 0, 2.9999998, 0, 2.9889898, 0, -0.25678575, 13.47905, -2.5761044, -60.240643)
+
+[node name="Rock_58" parent="." unique_id=249286626 instance=ExtResource("35_bhnj3")]
+transform = Transform3D(-1.6426346, 0, -2.0613449, 0, 2.9999995, 0, 0.97290325, 0, -3.480342, 7.7408876, -2.5761044, -69.29905)
+
+[node name="Rock_59" parent="." unique_id=2127838265 instance=ExtResource("35_bhnj3")]
+transform = Transform3D(2.0171795, 0, 0.8593912, 0, 2.9999998, 0, -0.680203, 0, 2.5485723, 3.9204688, -2.5761044, -76.682274)
 
 [node name="Rock_21" parent="." unique_id=1191174120 instance=ExtResource("39_pql20")]
 transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 26.09374, -2.9221, -64.36257)
@@ -5461,12 +5478,13 @@ transform = Transform3D(4.2442045, -1.0670494, 2.4182916, 1.219127, 4.849096, 6.
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.17654, -1.2745914, -94.795334)
 material_override = SubResource("StandardMaterial3D_5cm3m")
 amount = 32
+lifetime = 2.8299999999999996
 randomness = 0.12
 process_material = SubResource("ParticleProcessMaterial_igwt3")
 draw_pass_1 = SubResource("QuadMesh_ollfv")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="GPUParticles3D" unique_id=116876470]
-light_energy = 6.279
+light_energy = 16.0
 shadow_enabled = true
 omni_range = 79.967
 omni_attenuation = 2.0
@@ -5682,13 +5700,16 @@ transform = Transform3D(6.016598, -1.2540038, -0.12075156, 0.98442256, 7.6642256
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.372692, -2.4595928, -72.42062)
 dialogue_lines = Array[ExtResource("7_5hb4g")]([SubResource("Resource_m4j6x")])
 dialogue_controller_path = NodePath("")
-type_speed_override = 40.0
+type_speed_override = 60.0
+prerequisite_trigger_path = NodePath("../DialogueTrigger3")
 
 [node name="DialogueTrigger3" parent="." unique_id=261023984 instance=ExtResource("1_m4j6x")]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.5277748, -2.4595928, -93.33428)
+transform = Transform3D(-1.4040171e-07, 0, -0.9999999, 0, 1, 0, 3.2120166, 0, -4.371138e-08, 2.5277748, -2.4595928, -88.47599)
 dialogue_lines = Array[ExtResource("7_5hb4g")]([SubResource("Resource_e2jh5"), SubResource("Resource_l4tcc")])
 dialogue_controller_path = NodePath("")
 type_speed_override = 40.0
+blocking_trigger_path = NodePath("../DialogueTrigger2")
+reveal_node_path = NodePath("../Area3D/Lantern/OmniLight3D")
 
 [node name="DialogueTrigger4" parent="." unique_id=283006059 instance=ExtResource("1_m4j6x")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1.8302608, -2.1800106, -105.28032)
@@ -5778,8 +5799,13 @@ shape = SubResource("BoxShape3D_ma0ss")
 debug_color = Color(0, 0.5950001, 0.7, 1)
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="MapEdge2" unique_id=1635176727]
-transform = Transform3D(0.89049304, 0, 0.45501858, 0, 1, 0, -0.45501858, 0, 0.89049304, -31.482615, 0, -52.529057)
+transform = Transform3D(0.9704365, 0, 0.241397, 0, 1, 0, -0.241397, 0, 0.9704365, -32.897392, 0, -43.573566)
 shape = SubResource("BoxShape3D_x0eg5")
+debug_color = Color(0, 0.5950001, 0.7, 1)
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="MapEdge2" unique_id=2065653108]
+transform = Transform3D(0.8243598, 0, 0.5660466, 0, 1, 0, -0.5660466, 0, 0.8243598, -81.73847, 0, -15.36211)
+shape = SubResource("BoxShape3D_favtw")
 debug_color = Color(0, 0.5950001, 0.7, 1)
 
 [node name="MapEdge3" type="StaticBody3D" parent="." unique_id=1707759432]
@@ -5904,7 +5930,9 @@ mesh = SubResource("PointMesh_1pivh")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Area3D/Lantern" unique_id=2141498635]
 transform = Transform3D(1.0000024, 2.2351742e-08, 3.138557e-07, -1.4901161e-08, 1.0000004, -1.1920929e-07, -9.313226e-10, 0, 1.0000001, -0.21502781, 0.0044403076, -0.19064331)
+visible = false
 light_energy = 16.0
+omni_range = 9.453
 
 [node name="Sprite3D" type="Sprite3D" parent="Area3D/Lantern" unique_id=264671070]
 transform = Transform3D(1.0000008, -3.7252903e-08, -4.656613e-09, -7.450581e-09, 1, 8.940697e-08, -2.7939677e-09, 0, 1, -0.14521217, 0.10206604, -0.19298553)
