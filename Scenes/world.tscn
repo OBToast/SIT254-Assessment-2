@@ -328,9 +328,9 @@ size = Vector3(62.681877, 13.727539, 1.7218089)
 material = ExtResource("7_3fqxr")
 
 [node name="CSGBox3D113" type="CSGBox3D" parent="Map/RealMap" unique_id=120595299]
-transform = Transform3D(0.3628661, 0.023455512, 0.9315556, -0.17819545, 0.98298126, 0.044661462, -0.9146563, -0.18220271, 0.36086792, -69.255585, -52.293446, -361.95187)
+transform = Transform3D(0.36286694, 0.023455452, 0.9315556, -0.17819545, 0.98298126, 0.044661462, -0.9146582, -0.18220271, 0.36086792, -70.56993, -52.356457, -362.4611)
 use_collision = true
-size = Vector3(4.2873497, 30.490723, 56.57233)
+size = Vector3(4.2873497, 30.490723, 59.394073)
 material = ExtResource("7_3fqxr")
 
 [node name="CSGBox3D116" type="CSGBox3D" parent="Map/RealMap" unique_id=883841810]

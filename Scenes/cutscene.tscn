@@ -142,6 +142,27 @@ grow_vertical = 2
 texture = ExtResource("1_7n648")
 expand_mode = 3
 
+[node name="Label" type="Label" parent="." unique_id=327461545]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -308.0
+offset_bottom = 28.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 32
+text = "[PLACEHOLDER IMAGES]"
+
+[node name="ColorRect" type="ColorRect" parent="Label" unique_id=1368995527]
+z_index = -1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
 [node name="Control" parent="." unique_id=445563848 instance=ExtResource("2_vlwh7")]
 layout_mode = 1
 dialogue = Array[ExtResource("3_jd5kf")]([SubResource("Resource_wbwiw"), SubResource("Resource_qcfcl"), SubResource("Resource_ndjoj"), SubResource("Resource_34wqy"), SubResource("Resource_2842h"), SubResource("Resource_cq6to"), SubResource("Resource_vqc68"), SubResource("Resource_yfiq0"), SubResource("Resource_j1a0j"), SubResource("Resource_j6j7k"), SubResource("Resource_20k8y"), SubResource("Resource_k6rhx"), SubResource("Resource_0hfk5"), SubResource("Resource_o41vv"), SubResource("Resource_hffke")])

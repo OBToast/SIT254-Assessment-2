@@ -200,7 +200,13 @@ size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 64
 text = "Thanks for playing!
 That's all we've got for now.
-We hope you enjoyed!"
+We hope you enjoyed!
+
+Made by:
+Daniel McAllister - Programming and design
+Maisie MaCleish - Art, animation and design
+Julian Bunnik - Additional programming
+"
 horizontal_alignment = 1
 
 [node name="QuitToMenu" type="Button" parent="UI2/MarginContainer/VBoxContainer" unique_id=1813183748]

@@ -376,6 +376,18 @@ grow_vertical = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/StartMenu/MarginContainer" unique_id=1771050708]
 layout_mode = 2
 
+[node name="Label" type="Label" parent="UI/StartMenu/MarginContainer/VBoxContainer" unique_id=1308728533]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 128
+text = "Hellfire"
+
+[node name="Label2" type="Label" parent="UI/StartMenu/MarginContainer/VBoxContainer" unique_id=517096197]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 32
+text = "By group 21"
+
 [node name="Start" type="Button" parent="UI/StartMenu/MarginContainer/VBoxContainer" unique_id=1388152252]
 process_mode = 3
 custom_minimum_size = Vector2(0, 1)
